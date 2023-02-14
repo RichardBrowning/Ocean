@@ -4,7 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/glfw-3.3.8.bin.WIN64/glfw-3.3.8.bin.WIN64/include/**",
+                "C:/glfw-3.3.8.bin.WIN64/include/**",
                 "C:/VulkanSDK/Include/**"
             ],
             "defines": [
@@ -15,7 +15,8 @@
             "compilerPath": "C:\\ProgramData\\chocolatey\\bin\\gcc.exe",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "windows-gcc-x64"
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4
