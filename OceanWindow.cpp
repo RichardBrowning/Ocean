@@ -1,4 +1,4 @@
-#include "OceanWindow.hpp"
+#include "OceanWindow.h"
 
 namespace ocean{
     //LESSON: std::initializer_list for const variables initialization
@@ -6,6 +6,17 @@ namespace ocean{
     {
         initWindow();
     }
+
+    void OceanWindow::initWindow()
+    {
+        glfwInit();
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+        //LESSON: glfwCreateWindow() returns a pointer to a GLFWwindow object
+        window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+    }
+
     OceanWindow::~OceanWindow()
     {
         glfwDestroyWindow(window);
