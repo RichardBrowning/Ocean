@@ -27,5 +27,5 @@ clean:
 
 .PHONY: test clean
 
-test: main
+run: main
 	./main
