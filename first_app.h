@@ -9,7 +9,7 @@ namespace ocean {
             static constexpr int HEIGHT = 600;
             const std::string NAME = "First App";
 
-            void run(){};
+            void run();
         private:
            OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
     };

@@ -11,7 +11,7 @@ CXXFLAGS = -Wall -g -std=c++17 -I. -I$(VULKAN_SDK)/include -IC:\glfw-3.3.8.bin.W
 # -L$(VULKAN_SDK)/lib: add Vulkan SDK lib path to library path
 # -lvulkan: link to Vulkan library
 
-LDFLAGS = -L$(VULKAN_SDK)/lib
+LDFLAGS = -L$(VULKAN_SDK)/lib -LC:\glfw-3.3.8.bin.WIN64\lib-mingw-w64 -lglfw3 -lvulkan-1 -lgdi32 -static-libgcc -static-libstdc++
 # `pkg-config --static glfw3` -lvulkan 
 
 all: main
@@ -20,7 +20,7 @@ main: *.cpp *.h
 # $@ macro @ evaluates to the name of the current target: all
 # $< macro < evaluates to the name of the first prerequisite
 # $^ macro ^ evaluates to the names of all the prerequisites
-	g++ $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+	g++ $(CXXFLAGS) -o $@ *.cpp $(LDFLAGS)
 
 clean:
 	rm -f main
