@@ -1,3 +1,4 @@
+/** Copyright Brendan Galea */
 #pragma once
 
 #include "OceanWindow.h"

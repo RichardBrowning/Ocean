@@ -1,3 +1,4 @@
+/** Copyright Brendan Galea */
 #include "OceanDevice.h"
 
 // std headers

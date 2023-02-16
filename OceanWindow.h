@@ -3,6 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <string>
+#include <stdexcept>
 
 namespace ocean {
     class OceanWindow {
@@ -21,5 +22,7 @@ namespace ocean {
             OceanWindow& operator=(const OceanWindow&) = delete;
 
             bool shouldClose() { return glfwWindowShouldClose(window); };
+            //VkInstance is , VkSurfaceKHR* points to a vulkan surface 
+            void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
     };
 }
