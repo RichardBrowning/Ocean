@@ -1,12 +1,12 @@
 #pragma once
 
-#include "my_engine_window.hpp"
+#include "OceanWindow.h"
 
 // std lib headers
 #include <string>
 #include <vector>
 
-namespace lve {
+namespace ocean {
 
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities;
@@ -22,7 +22,7 @@ struct QueueFamilyIndices {
   bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
 };
 
-class MyEngineDevice {
+class OceanDevice {
  public:
 #ifdef NDEBUG
   const bool enableValidationLayers = false;
@@ -30,14 +30,14 @@ class MyEngineDevice {
   const bool enableValidationLayers = true;
 #endif
 
-  MyEngineDevice(MyEngineWindow &window);
-  ~MyEngineDevice();
+  OceanDevice(OceanWindow &window);
+  ~OceanDevice();
 
   // Not copyable or movable
-  MyEngineDevice(const MyEngineDevice &) = delete;
-  void operator=(const MyEngineDevice &) = delete;
-  MyEngineDevice(MyEngineDevice &&) = delete;
-  MyEngineDevice &operator=(MyEngineDevice &&) = delete;
+  OceanDevice(const OceanDevice &) = delete;
+  void operator=(const OceanDevice &) = delete;
+  OceanDevice(OceanDevice &&) = delete;
+  OceanDevice &operator=(OceanDevice &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }
@@ -93,7 +93,7 @@ class MyEngineDevice {
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-  MyEngineWindow &window;
+  OceanWindow &window;
   VkCommandPool commandPool;
 
   VkDevice device_;

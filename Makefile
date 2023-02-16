@@ -20,14 +20,13 @@ else
         CXXFLAGS = -Wall -g -std=c++17 -I. -I/usr/include -I/usr/local/include
 		LDFLAGS = -L/usr/lib -L/usr/local/lib `pkg-config --static glfw3` -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr -lXi
     endif
+	#TODO: change macOS path 
     ifeq ($(UNAME_S),Darwin)
         CXXFLAGS = -Wall -g -std=c++17 -I. -I/usr/include -I/usr/local/include
-		LDFLAGS = -L/usr/lib -L/usr/local/lib `pkg-config --static glfw3` -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr -lXi
+		LDFLAGS = -L/usr/lib -L/usr/local/lib `pkg-config --static glfw3` -lglfw -lvulkan
     endif
 	
 endif
-# 
-
 
 all: main
 
