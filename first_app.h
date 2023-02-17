@@ -2,6 +2,7 @@
 
 #include "OceanWindow.h"
 #include "OceanPipeline.h"
+#include "OceanDevice.h"
 
 namespace ocean {
     class FirstApp {
@@ -13,6 +14,7 @@ namespace ocean {
             void run();
         private:
            OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
-           OceanPipeline oceanPipeline{"shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv"};
+           OceanDevice device{oceanWindow};
+           OceanPipeline oceanPipeline{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
     };
 }

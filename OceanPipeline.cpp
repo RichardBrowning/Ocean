@@ -4,8 +4,8 @@
 #include <stdexcept>
 
 namespace ocean {
-    OceanPipeline::OceanPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath) {
-        createGraphicsPipeline(vertShaderPath, fragShaderPath);
+    OceanPipeline::OceanPipeline(OceanDevice& device, const std::string& vertShaderPath, const std::string& fragShaderPath, const PipelineConfigInfo& configInfo) : device{device} {
+        createGraphicsPipeline(vertShaderPath, fragShaderPath, configInfo);
     }
 
     std::vector<char> OceanPipeline::readFile(const std::string& filename) {
@@ -30,12 +30,31 @@ namespace ocean {
         return buffer;
     }
 
-    void OceanPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath) {
+    void OceanPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const PipelineConfigInfo& configInfo) {
         //variable’s data type will automatically be deducted from its initializer
         auto vertexShaderCode = readFile(vertShaderPath);
         auto fragmentShaderCode = readFile(fragShaderPath);
 
         std::cout << "Vertex Shader Size: " << vertexShaderCode.size() << std::endl;
         std::cout << "Fragment Shader Size: " << fragmentShaderCode.size() << std::endl;
+    }
+    void OceanPipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
+    {
+        VkShaderModuleCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        createInfo.codeSize = code.size();
+        //reinterpret_cast is used to cast a pointer to any type of data
+        //data() returns a pointer to the first element in the vector
+        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+
+        if (vkCreateShaderModule(device.device(), &createInfo, nullptr, shaderModule) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create shader module!");
+        }
+    }
+    PipelineConfigInfo OceanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
+    {
+        PipelineConfigInfo configInfo{};
+
+        return configInfo;
     }
 }

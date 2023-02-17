@@ -22,6 +22,7 @@ namespace ocean{
         glfwDestroyWindow(window);
         glfwTerminate();
     }
+    //window suface, like WebGL context, take a vk instance and a vk surface 
     void OceanWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
     {
         if(glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS){

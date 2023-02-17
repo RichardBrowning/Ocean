@@ -48,13 +48,14 @@ void DestroyDebugUtilsMessengerEXT(
 }
 
 // class member functions
+// 
 OceanDevice::OceanDevice(OceanWindow &window) : window{window} {
-  createInstance();
-  setupDebugMessenger();
-  createSurface();
-  pickPhysicalDevice();
-  createLogicalDevice();
-  createCommandPool();
+  createInstance();//create vulkan instance and create connection between app and vulkan lib
+  setupDebugMessenger();// set up validation, VULKAN DOES LITTLE ERROE TRACKING, CRASHES ON SIGHT
+  createSurface();//create surface with glfw, connect window with vulkan
+  pickPhysicalDevice();//pick device to run  
+  createLogicalDevice();//describes what feature of the physical device we wnt to use
+  createCommandPool();//create command pool to allocate command buffer
 }
 
 OceanDevice::~OceanDevice() {
