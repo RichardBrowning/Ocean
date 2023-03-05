@@ -33,7 +33,7 @@ main: *.cpp *.h
 # $@ macro @ evaluates to the name of the current target: all
 # $< macro < evaluates to the name of the first prerequisite
 # $^ macro ^ evaluates to the names of all the prerequisites
-	g++ $(CXXFLAGS) -o $@ *.cpp $(LDFLAGS)
+	g++ $(CXXFLAGS) -o $@ *.cpp $(LDFLAGS) 
 
 clean:
 	rm -f main
