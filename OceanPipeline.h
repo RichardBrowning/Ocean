@@ -6,7 +6,18 @@
 
 namespace ocean {
     struct PipelineConfigInfo {
-
+        VkViewport viewport;
+        VkRect2D scissor;
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+        VkPipelineViewportStateCreateInfo viewportInfo;
+        VkPipelineRasterizationStateCreateInfo rasterizerInfo;
+        VkPipelineMultisampleStateCreateInfo multisamplingInfo;
+        VkPipelineColorBlendAttachmentState colorBlendAttachment;
+        VkPipelineColorBlendStateCreateInfo colorBlendingInfo;
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+        VkPipelineLayout pipelineLayout;
+        VkRenderPass renderPass = VK_NULL_HANDLE;
+        uint32_t subpass = 0;
     };
     class OceanPipeline {
         public:
