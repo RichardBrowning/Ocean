@@ -8,13 +8,13 @@ namespace ocean {
     struct PipelineConfigInfo {
         VkViewport viewport;
         VkRect2D scissor;
-        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-        VkPipelineViewportStateCreateInfo viewportInfo;
-        VkPipelineRasterizationStateCreateInfo rasterizerInfo;
-        VkPipelineMultisampleStateCreateInfo multisamplingInfo;
-        VkPipelineColorBlendAttachmentState colorBlendAttachment;
-        VkPipelineColorBlendStateCreateInfo colorBlendingInfo;
-        VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+        VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo; //
+        //VkPipelineViewportStateCreateInfo viewportInfo; //avoid pviewport become null pointer when copied
+        VkPipelineRasterizationStateCreateInfo rasterizerInfo; //
+        VkPipelineMultisampleStateCreateInfo multisamplingInfo; //
+        VkPipelineColorBlendAttachmentState colorBlendAttachment; //
+        VkPipelineColorBlendStateCreateInfo colorBlendingInfo; //
+        VkPipelineDepthStencilStateCreateInfo depthStencilInfo; //
         VkPipelineLayout pipelineLayout;
         VkRenderPass renderPass = VK_NULL_HANDLE;
         uint32_t subpass = 0;
@@ -23,7 +23,7 @@ namespace ocean {
         public:
         //const is for value that cannot be changed in the runtime
             OceanPipeline(OceanDevice& device, const std::string& vertShaderPath, const std::string& fragShaderPath, const PipelineConfigInfo& configInfo);
-            ~OceanPipeline() {}
+            ~OceanPipeline();
             //the poly construction function takes a oceanPipeline reference
             OceanPipeline(const OceanPipeline&) = delete;
             void operator = (const OceanPipeline&) = delete;

@@ -2,12 +2,17 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <cassert>
 
 namespace ocean {
     OceanPipeline::OceanPipeline(OceanDevice& device, const std::string& vertShaderPath, const std::string& fragShaderPath, const PipelineConfigInfo& configInfo) : device{device} {
         createGraphicsPipeline(vertShaderPath, fragShaderPath, configInfo);
     }
-
+    OceanPipeline::~OceanPipeline() {
+        vkDestroyShaderModule(device.device(), fragShaderModule, nullptr);
+        vkDestroyShaderModule(device.device(), vertShaderModule, nullptr);
+        vkDestroyPipeline(device.device(), graphicsPipeline, nullptr);
+    }
     std::vector<char> OceanPipeline::readFile(const std::string& filename) {
         //ate = seek to the end of stream immediately after open, binary = open in binary mode
         std::ifstream file{filename, std::ios::ate | std::ios::binary};
@@ -31,6 +36,9 @@ namespace ocean {
     }
 
     void OceanPipeline::createGraphicsPipeline(const std::string& vertShaderPath, const std::string& fragShaderPath, const PipelineConfigInfo& configInfo) {
+        //LESSON: assert is used to check the condition, if the condition is false, the program will terminate
+        assert(configInfo.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline: no pipeline layout previded in the config info!");
+        assert(configInfo.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline: no render pass provided in the config info!");
         //variable’s data type will automatically be deducted from its initializer
         auto vertexShaderCode = readFile(vertShaderPath);
         auto fragmentShaderCode = readFile(fragShaderPath);
@@ -55,6 +63,46 @@ namespace ocean {
         shaderStages[1].flags = 0;
         shaderStages[1].pNext = VK_NULL_HANDLE;
         shaderStages[1].pSpecializationInfo = VK_NULL_HANDLE;
+
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.vertexBindingDescriptionCount = 0;
+        vertexInputInfo.pVertexBindingDescriptions = VK_NULL_HANDLE;
+        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+        vertexInputInfo.pVertexAttributeDescriptions = VK_NULL_HANDLE;
+
+        VkPipelineViewportStateCreateInfo viewportInfo{};
+        //viewportInfo.pNext = nullptr;
+        //viewportInfo.flags = 0;
+        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportInfo.viewportCount = 1;
+        viewportInfo.pViewports = &configInfo.viewport;
+        viewportInfo.scissorCount = 1;
+        viewportInfo.pScissors = &configInfo.scissor;
+
+        VkGraphicsPipelineCreateInfo pipelineInfo{};
+        pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+        pipelineInfo.stageCount = 2;
+        pipelineInfo.pStages = shaderStages;
+        pipelineInfo.pVertexInputState = &vertexInputInfo;
+        pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
+        pipelineInfo.pViewportState = &viewportInfo;
+        pipelineInfo.pRasterizationState = &configInfo.rasterizerInfo;
+        pipelineInfo.pColorBlendState = &configInfo.colorBlendingInfo;
+        pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
+        pipelineInfo.pMultisampleState = &configInfo.multisamplingInfo;
+        pipelineInfo.pDynamicState = VK_NULL_HANDLE;
+
+        pipelineInfo.layout = configInfo.pipelineLayout;
+        pipelineInfo.renderPass = configInfo.renderPass;
+        pipelineInfo.subpass = 0;
+
+        pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+        pipelineInfo.basePipelineIndex = -1;
+
+        if (vkCreateGraphicsPipelines(device.device(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create graphics pipeline!");
+        }
     }
     void OceanPipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule)
     {
@@ -89,11 +137,7 @@ namespace ocean {
         configInfo.scissor.extent = {width, height};
 
         // combine the viewport and scissor into a viewport state
-        configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        configInfo.viewportInfo.viewportCount = 1;
-        configInfo.viewportInfo.pViewports = &configInfo.viewport;
-        configInfo.viewportInfo.scissorCount = 1;
-        configInfo.viewportInfo.pScissors = &configInfo.scissor;
+        //LESSON: some compiler has Copy Elision, other may not 
 
         /**rasterization info*/ 
         configInfo.rasterizerInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
