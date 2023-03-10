@@ -1,36 +1,38 @@
-Current Progress
-Setup runtime environment, glfw window initialization, validation layers (API has little error checking), vulkan instance creation, device selection and setup, fixed-function pipeline, add shader modules, pipeline configuration, Framebuffer setup, Swap Chain Setup, Commandbuffer setup, Vertex Buffers (now), Fragment Interpolation, Dynamic Viewport, 3D Transformations, Renderer system, Projection Matrices, Camera Transformation, Game Loop ...
+My project is to build a vulkan based-game engine and to implement two systems with it.
+first part Current Progress (set up window, instance, device√, build graphics pipeline)
+Setup runtime environment, !init window, setup validation layers for more advanced debugging, !create instance, !setup graphics device (GPU), !construct a functional graphics pipeline and add modules, also been able to setup Framebuffer, and framebuffer sequence, aka Swap Chain, setup Commandbuffer for operation on frames, !constructing Vertex Buffers ( load and display more advanced model), Fragment Interpolation, Dynamic Viewport, 3D Transformations, Renderer system, Projection Matrices, Camera Transformation, Game Loop ...
 
 Result
 Although a lot was done, little can be shown as for now.
-
-Plan to completely implement the first object in the next week.
+The window is simple. if you want to clone this in WebGL it will only take a few lines of code. But in Vulkan it is a lot more complicated.
 
 Technical difficulty
 "It was not until I get started on the Project did I realize how low-level Vulkan really is." 
-(1) Low level, numerous procedures with every component. Many potential problems beginner tend to make. 
+(1) A few steps to do a rendering but there are vast amount of procedures with every step. There are many potential problems beginner tend to make. 
 
+
+'''
 (2) Multi_platform capability:
-Using make process for seperate systems, considering transfering to cmake
-
-
-
+write Build command for seperate systems, which is very painstaking. (Mac has seperate set of config) For now only Linux Considering transfering to cmake.
+'''
 
 
 
 
 Subject 2 current progress
-1. Multi-threaded shader compilation
+1. build shader system
 Current Progress
-Still in reserach stage. Evaluated multiple solutions used for OpenGL and try to convert to multi-threading solution. There are also example algorithm available on the vulkan documentation.
+Still in reserach stage. Evaluated solutions used for OpenGL and try to convert to multi-threading solution. There are also example algorithm available in the vulkan documentation.
 
 Result
-Practical model ready for testing, using Parallel pipeline state creation (vulkan encouraged to program this in multi-threads). May be tested as soon as the platform becomes available.
+Practical model ready for testing, using Parallel pipeline state creation (vulkan encouraged to program this in multi-threads). May be implemented and tested as soon as the platform becomes available.
 Technical Difficulties 
 Multi-threading protecting data consistency, using utex, atomic value, etc.
 
 Optional
-Compute shader is mandatory in VK. GPGPU (general purpose computing on GPU). Experimenting do General computation on GPU (utilizing its heavily paralleled architecture), including shader compilation 
+I am also thinking about using Compute shader to render the shader on GPU which is becoming standard in VK. 
+
+```GPGPU (general purpose computing on GPU). Experimenting do General computation on GPU (utilizing its heavily paralleled architecture), including shader compilation``` 
 
 
 2. Particle system
@@ -38,15 +40,12 @@ Current progress
 In research
 
 Result
+ALREADY UNDERSTAND HOW IT WORKS WITH VULKAN AND HOW TO PROGRAM IT IN A MULTI-THREADED WAY
 The "classical" CPU based particle system would store particle data in the system's main memory and then use the CPU to update them. 
 It is then transferred to the GPU's memory again so it can display the updated particles in the next frame.
 
-Speed up can be achieved via Parallelism
+!Speed up can be achieved via Parallelism
 workload across the array of particles in the data structure
-    Parallelize the workload across the array of particles, calculating the interactors’ contribution and Euler step as a single work unit.
-    Parallelize the workload across interactors, calculating the effect of each interactor at every particle as a single work unit.
-    Further parallelize Option 1, above, by splitting interactor contributions into separate work units.
-    Parallelize the sorting algorithm.
-    Parallelize the generators’ contribution.
+    Parallelize the workload across the array of particles, interactors, effect of each interactor, OPTIONAL sorting algorithm, generators’ contribution.
 
-Vulkan Compute to implement the Particle system 
+I am also thinking about building the system Vulkan Compute to implement the Particle system 
