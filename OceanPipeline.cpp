@@ -117,6 +117,11 @@ namespace ocean {
             throw std::runtime_error("Failed to create shader module!");
         }
     }
+    void OceanPipeline::bind(VkCommandBuffer commandBuffer)
+    {
+        //if (graphicsPipeline == VK_NULL_HANDLE){};
+        vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    }
     PipelineConfigInfo OceanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
     {
         PipelineConfigInfo configInfo{};

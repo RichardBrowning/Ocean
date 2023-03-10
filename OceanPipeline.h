@@ -27,6 +27,8 @@ namespace ocean {
             //the poly construction function takes a oceanPipeline reference
             OceanPipeline(const OceanPipeline&) = delete;
             void operator = (const OceanPipeline&) = delete;
+
+            void bind(VkCommandBuffer commandBuffer);
             //default configuration
             static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
 
