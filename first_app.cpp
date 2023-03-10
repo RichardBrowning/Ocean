@@ -19,6 +19,7 @@ namespace ocean {
             glfwPollEvents();
             drawFrame();
         }
+        vkDeviceWaitIdle(oceanDevice.device());
     }
     void FirstApp::createPipelineLayout() {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
