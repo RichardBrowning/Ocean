@@ -14,19 +14,22 @@
 ifeq ($(OS),Windows_NT)
 	CXXFLAGS = -Wall -g -std=c++17 -I. -I$(VULKAN_SDK)/include -IC:\glfw-3.3.8.bin.WIN64/include
 	LDFLAGS = -L$(VULKAN_SDK)/lib -LC:\glfw-3.3.8.bin.WIN64\lib-mingw-w64 -lglfw3 -lvulkan-1 -lgdi32 -static-libgcc -static-libstdc++
+	GLSLC = C:\VulkanSDK\Bin\glslc.exe
 else
 	UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         CXXFLAGS = -Wall -g -std=c++17 -I. -I/usr/include -I/usr/local/include
 		LDFLAGS = -L/usr/lib -L/usr/local/lib `pkg-config --static glfw3` -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr -lXi
+		GLSLC = glslc
     endif
     ifeq ($(UNAME_S),Darwin)
         CXXFLAGS = -Wall -g -std=c++17 -I. -I$(VULKAN_SDK)/macOS/include -I$(CPATH)
 		LDFLAGS = -L$(LIBRARY_PATH) -L$(VULKAN_SDK)/macOS/lib `pkg-config --static glfw3` -lglfw -lvulkan
+		GLSLC = $(VULKAN_SDK)/macOS/bin/glslc
     endif
 	
 endif
-
+# Windows: manually compile the shader
 vertSource = $(shell find ./shaders -type f -name "*.vert")
 fragSource = $(shell find ./shaders -type f -name "*.frag")
 vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSource))
@@ -43,7 +46,7 @@ $(TARGET): *.cpp *.h
 
 #make shader target
 %.spv: %
-	glslc $< -o $@
+	$(GLSLC) $< -o $@
 
 clean:
 	rm -f main

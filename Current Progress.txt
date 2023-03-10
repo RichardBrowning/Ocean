@@ -1,0 +1,48 @@
+Current Progress
+Setup runtime environment, glfw window initialization, validation layers (API has little error checking), vulkan instance creation, device selection and setup, fixed-function pipeline, add shader modules, pipeline configuration, Framebuffer setup, Swap Chain Setup, Commandbuffer setup, Vertex Buffers (now), Fragment Interpolation, Dynamic Viewport, 3D Transformations, Renderer system, Projection Matrices, Camera Transformation, Game Loop ...
+
+Result
+Although a lot was done, little can be shown as for now.
+
+Plan to completely implement the first object in the next week.
+
+Technical difficulty
+"It was not until I get started on the Project did I realize how low-level Vulkan really is." 
+(1) Low level, numerous procedures with every component. Many potential problems beginner tend to make. 
+
+(2) Multi_platform capability:
+Using make process for seperate systems, considering transfering to cmake
+
+
+
+
+
+
+
+Subject 2 current progress
+1. Multi-threaded shader compilation
+Current Progress
+Still in reserach stage. Evaluated multiple solutions used for OpenGL and try to convert to multi-threading solution. There are also example algorithm available on the vulkan documentation.
+
+Result
+practical model ready for testing, using Parallel pipeline state creation (vulkan encouraged to program this in multi-threads). May be tested as soon as the platform becomes available.
+Technical Difficulties 
+Multi-threading protecting data consistency, using utex, atomic value, etc.
+
+Optional
+Compute shader is mandatory in VK. GPGPU (general purpose computing on GPU). Experimenting do General computation on GPU (utilizing its heavily paralleled architecture), including shader compilation 
+
+
+2. Particle system
+Current progress
+In research
+
+Result
+The "classical" CPU based particle system would store particle data in the system's main memory and then use the CPU to update them. 
+It is then transferred to the GPU's memory again so it can display the updated particles in the next frame.
+
+Speed up can be achieved via Parallelism
+workload across the array of particles in the data structure
+
+
+Vulkan Compute to implement the Particle system 
