@@ -97,7 +97,7 @@ namespace ocean {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        result = oceanSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], 1, &imageIndex);
+        result = oceanSwapChain.submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
 
         //will be executed 
 

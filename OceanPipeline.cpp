@@ -119,7 +119,7 @@ namespace ocean {
     }
     void OceanPipeline::bind(VkCommandBuffer commandBuffer)
     {
-        //if (graphicsPipeline == VK_NULL_HANDLE){};
+        //if (graphicsPipeline == VK_NULL_HANDLE){}; //already properly initialized
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
     PipelineConfigInfo OceanPipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height)
