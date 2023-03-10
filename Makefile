@@ -27,13 +27,23 @@ else
 	
 endif
 
-all: main
+vertSource = $(shell find ./shaders -type f -name "*.vert")
+fragSource = $(shell find ./shaders -type f -name "*.frag")
+vertObjFiles = $(patsubst %.vert, %.vert.spv, $(vertSource))
+fragObjFiles = $(patsubst %.frag, %.frag.spv, $(fragSource))
 
-main: *.cpp *.h
+TARGET = main
+
+$(TARGET): $(vertObjFiles) $(fragObjFiles)
+$(TARGET): *.cpp *.h
 # $@ macro @ evaluates to the name of the current target: all
 # $< macro < evaluates to the name of the first prerequisite
 # $^ macro ^ evaluates to the names of all the prerequisites
 	g++ $(CXXFLAGS) -o $@ *.cpp $(LDFLAGS) 
+
+#make shader target
+%.spv: %
+	glslc $< -o $@
 
 clean:
 	rm -f main
