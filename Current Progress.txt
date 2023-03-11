@@ -1,14 +1,13 @@
-My project is to build a vulkan based-game engine and to implement two systems with it.
+My project is to build a vulkan based-game engine and to implement two practical components with it.
 first part Current Progress (set up window, instance, device√, build graphics pipeline)
 Setup runtime environment, !init window, setup validation layers for more advanced debugging, !create instance, !setup graphics device (GPU), !construct a functional graphics pipeline and add modules, also been able to setup Framebuffer, and framebuffer sequence, aka Swap Chain, setup Commandbuffer for operation on frames, !constructing Vertex Buffers ( load and display more advanced model), Fragment Interpolation, Dynamic Viewport, 3D Transformations, Renderer system, Projection Matrices, Camera Transformation, Game Loop ...
 
 Result
 Although a lot was done, little can be shown as for now.
-The window is simple. if you want to clone this in WebGL it will only take a few lines of code. But in Vulkan it is a lot more complicated.
 
 Technical difficulty
 "It was not until I get started on the Project did I realize how low-level Vulkan really is." 
-(1) A few steps to do a rendering but there are vast amount of procedures with every step. There are many potential problems beginner tend to make. 
+(1) A few steps to do a rendering but there are vast amount of procedures with every step. There are many potential problems 
 
 
 '''
@@ -30,7 +29,7 @@ Technical Difficulties
 Multi-threading protecting data consistency, using utex, atomic value, etc.
 
 Optional
-I am also thinking about using Compute shader to render the shader on GPU which is becoming standard in VK. 
+I am also thinking about using Vulkan Compute shader to render the shader on GPU which is becoming standard in VK. 
 
 ```GPGPU (general purpose computing on GPU). Experimenting do General computation on GPU (utilizing its heavily paralleled architecture), including shader compilation``` 
 
@@ -49,3 +48,4 @@ workload across the array of particles in the data structure
     Parallelize the workload across the array of particles, interactors, effect of each interactor, OPTIONAL sorting algorithm, generators’ contribution.
 
 I am also thinking about building the system Vulkan Compute to implement the Particle system 
+
