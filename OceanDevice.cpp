@@ -417,6 +417,7 @@ uint32_t OceanDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags 
   throw std::runtime_error("failed to find suitable memory type!");
 }
 
+//Buffer creation helper
 void OceanDevice::createBuffer(
     VkDeviceSize size,
     VkBufferUsageFlags usage,

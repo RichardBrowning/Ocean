@@ -5,6 +5,7 @@
 namespace ocean {
     FirstApp::FirstApp()
     {
+        loadModel();
         createPipelineLayout();
         createPipeline();
         createCommandBuffers();
@@ -21,7 +22,17 @@ namespace ocean {
         }
         vkDeviceWaitIdle(oceanDevice.device());
     }
-    void FirstApp::createPipelineLayout() {
+    void FirstApp::loadModel()
+    {
+        std::vector<OceanModel::Vertex> vertices = {
+            {{0.0f, -0.5f}},
+            {{0.5f, 0.5f}},
+            {{-0.5f, 0.5f}}
+        };
+        oceanModel = std::make_unique<OceanModel>(oceanDevice, vertices);
+    }
+    void FirstApp::createPipelineLayout()
+    {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0;
@@ -81,7 +92,8 @@ namespace ocean {
             vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
             oceanPipeline->bind(commandBuffers[i]);
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+            oceanModel->bind(commandBuffers[i]);
+            oceanModel->draw(commandBuffers[i]);
 
             vkCmdEndRenderPass(commandBuffers[i]);
             if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

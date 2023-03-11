@@ -28,9 +28,8 @@ namespace ocean
         void bind(VkCommandBuffer commandBuffer);
         void draw(VkCommandBuffer commandBuffer);
     private:
-
         void createVertexBuffer(const std::vector<Vertex> &vertices);
-        OceanDevice oceanDevice;
+        OceanDevice &oceanDevice; //reference to the device
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;

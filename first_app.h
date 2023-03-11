@@ -3,6 +3,7 @@
 #include "OceanDevice.h"
 #include "OceanSwapChain.h"
 #include "OceanPipeline.h"
+#include "OceanModel.h"
 #include <memory>
 #include <vector>
 
@@ -21,6 +22,7 @@ namespace ocean {
 
             void run();
         private:
+            void loadModel();
             void createPipelineLayout();
             void createPipeline();
             void createCommandBuffers();
@@ -32,5 +34,6 @@ namespace ocean {
             std::unique_ptr<OceanPipeline> oceanPipeline;//{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
             VkPipelineLayout pipelineLayout;
             std::vector<VkCommandBuffer> commandBuffers;
+            std::unique_ptr<OceanModel> oceanModel;
     };
 }

@@ -1,4 +1,5 @@
 #include "OceanPipeline.h"
+#include "OceanModel.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -64,12 +65,15 @@ namespace ocean {
         shaderStages[1].pNext = VK_NULL_HANDLE;
         shaderStages[1].pSpecializationInfo = VK_NULL_HANDLE;
 
+
+        auto bindingDescription = OceanModel::Vertex::getBindingDescriptions();
+        auto attributeDescription = OceanModel::Vertex::getAttributeDescriptions();
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexBindingDescriptions = VK_NULL_HANDLE;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.pVertexAttributeDescriptions = VK_NULL_HANDLE;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescription.size());
+        vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescription.size());
+        vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
+        vertexInputInfo.pVertexBindingDescriptions = bindingDescription.data();
 
         VkPipelineViewportStateCreateInfo viewportInfo{};
         //viewportInfo.pNext = nullptr;
