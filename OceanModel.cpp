@@ -54,11 +54,16 @@ namespace ocean {
 
     std::vector<VkVertexInputAttributeDescription> OceanModel::Vertex::getAttributeDescriptions()
     {
-        std::vector<VkVertexInputAttributeDescription> inputAttributeDescription(1);
+        std::vector<VkVertexInputAttributeDescription> inputAttributeDescription(2);
         inputAttributeDescription[0].binding = 0;
         inputAttributeDescription[0].location = 0;
         inputAttributeDescription[0].format = VK_FORMAT_R32G32_SFLOAT;
-        inputAttributeDescription[0].offset = 0;
+        inputAttributeDescription[0].offset = offsetof(Vertex, position);
+
+        inputAttributeDescription[1].binding = 0;
+        inputAttributeDescription[1].location = 1;
+        inputAttributeDescription[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        inputAttributeDescription[1].offset = offsetof(Vertex, color);//calculates the offset from the first element of the structure to the color element
         return inputAttributeDescription;
     }
 }
