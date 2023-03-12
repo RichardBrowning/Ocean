@@ -18,7 +18,7 @@ namespace ocean {
 
             //delete copy constructor and copy assignment operator
             FirstApp(const FirstApp&) = delete;
-            void operator = (const FirstApp&) = delete;
+            FirstApp& operator = (const FirstApp&) = delete;
 
             void run();
         private:
@@ -28,10 +28,14 @@ namespace ocean {
             void createCommandBuffers();
             void drawFrame();
 
+            void recreateSwapChain();
+            void recordCommandBuffer( int imageIndex);
+
             OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
             OceanDevice oceanDevice{oceanWindow};
-            OceanSwapChain oceanSwapChain{oceanDevice, oceanWindow.getExtent()};
-            std::unique_ptr<OceanPipeline> oceanPipeline;//{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
+            // OceanSwapChain oceanSwapChain{oceanDevice, oceanWindow.getExtent()};
+            std::unique_ptr<OceanSwapChain> oceanSwapChain;
+            std::unique_ptr<OceanPipeline> oceanPipeline; //{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
             VkPipelineLayout pipelineLayout;
             std::vector<VkCommandBuffer> commandBuffers;
             std::unique_ptr<OceanModel> oceanModel;

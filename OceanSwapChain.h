@@ -19,7 +19,7 @@ class OceanSwapChain {
   ~OceanSwapChain();
 
   OceanSwapChain(const OceanSwapChain &) = delete;
-  void operator=(const OceanSwapChain &) = delete;
+  OceanSwapChain& operator=(const OceanSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
   VkRenderPass getRenderPass() { return renderPass; }

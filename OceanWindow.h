@@ -9,10 +9,12 @@ namespace ocean {
     class OceanWindow {
         private:
             void initWindow();
-            const int width;
-            const int height;
+             int width;
+             int height;
+             bool frameBufferResized = false;
             std::string name;
             GLFWwindow* window;
+            static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
         public:
             OceanWindow(int width, int height, std::string name);
             ~OceanWindow();
@@ -24,6 +26,9 @@ namespace ocean {
 
             bool shouldClose() { return glfwWindowShouldClose(window); };
             VkExtent2D getExtent() {return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};}
+            
+            void resetFrameBufferResized() { frameBufferResized = false; }
+            bool wasWindowResized() { return frameBufferResized; }
             
             //VkInstance is , VkSurfaceKHR* points to a vulkan surface 
             void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);

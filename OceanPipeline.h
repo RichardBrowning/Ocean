@@ -26,7 +26,7 @@ namespace ocean {
             ~OceanPipeline();
             //the poly construction function takes a oceanPipeline reference
             OceanPipeline(const OceanPipeline&) = delete;
-            void operator = (const OceanPipeline&) = delete;
+            OceanPipeline& operator = (const OceanPipeline&) = delete;
 
             void bind(VkCommandBuffer commandBuffer);
             //default configuration

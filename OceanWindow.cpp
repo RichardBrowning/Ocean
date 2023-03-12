@@ -11,10 +11,12 @@ namespace ocean{
     {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         //LESSON: glfwCreateWindow() returns a pointer to a GLFWwindow object
         window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
+        glfwSetWindowUserPointer(window, this);
+        glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     }
 
     OceanWindow::~OceanWindow()
@@ -28,5 +30,13 @@ namespace ocean{
         if(glfwCreateWindowSurface(instance, window, nullptr, surface) != VK_SUCCESS){
             throw std::runtime_error("failed to create window surface!");
         }
+    }
+
+    void OceanWindow::framebufferResizeCallback(GLFWwindow *window, int width, int height)
+    {
+        auto oceanWindow = reinterpret_cast<OceanWindow*>(glfwGetWindowUserPointer(window));
+        oceanWindow -> frameBufferResized = true;
+        oceanWindow -> width = width;
+        oceanWindow -> height = height;
     }
 }

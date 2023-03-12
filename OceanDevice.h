@@ -36,9 +36,9 @@ class OceanDevice {
 
   // Not copyable or movable
   OceanDevice(const OceanDevice &) = delete;
-  void operator=(const OceanDevice &) = delete;
+  OceanDevice& operator=(const OceanDevice &) = delete;
   OceanDevice(OceanDevice &&) = delete;
-  OceanDevice &operator=(OceanDevice &&) = delete;
+  OceanDevice& operator=(OceanDevice &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }
