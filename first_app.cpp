@@ -1,9 +1,21 @@
 #include "first_app.h"
+#define GLM_FORRCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
 #include <stdexcept>
 #include <cassert>
 #include <array>
 
 namespace ocean {
+    struct SimplePushConstantData {
+        glm::vec2 offset;
+        //certain objects like uniform and push constants must be laid out to meet certain reqirements 
+        // a scaler of size N has a scalar alignment of N
+        // a 2 component vector has a base alignment equal to 2* its scalar alignment
+        // scalar float N = 4 bytes, vec2 = 2*4 = 8 bytes, vec3 = 4N = 16 bytes
+        alignas(16) glm::vec3 color;
+        float scale;
+    };
     FirstApp::FirstApp()
     {
         loadModel();
@@ -35,12 +47,18 @@ namespace ocean {
     }
     void FirstApp::createPipelineLayout()
     {
+
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(SimplePushConstantData);
+
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 0;
         pipelineLayoutInfo.pSetLayouts = nullptr; //pipeline set layout pass data other than vertex data to the shaders
-        pipelineLayoutInfo.pushConstantRangeCount = 0; 
-        pipelineLayoutInfo.pPushConstantRanges = nullptr; //way to efficiently pass A SMALL AMOUNT OF DATA to shaders
+        pipelineLayoutInfo.pushConstantRangeCount = 1; 
+        pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; //way to efficiently pass A SMALL AMOUNT OF DATA to shaders
         //device documentation ## 
         if(vkCreatePipelineLayout(oceanDevice.device(), &pipelineLayoutInfo, nullptr/**allocation callback*/, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
@@ -115,6 +133,10 @@ namespace ocean {
     }
 
     void FirstApp::recordCommandBuffer(int imageIndex){
+        //animation
+        static int frame = 0;
+        frame = (frame+1)%1000;
+
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -132,7 +154,8 @@ namespace ocean {
         renderPassInfo.renderArea.extent = oceanSwapChain->getSwapChainExtent();
 
         std::array<VkClearValue, 2> clearValues{};
-        clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+        //darker BG
+        clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
         clearValues[1].depthStencil = {1.0f, 0};
         renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         renderPassInfo.pClearValues = clearValues.data();
@@ -151,7 +174,15 @@ namespace ocean {
 
         oceanPipeline->bind(commandBuffers[imageIndex]);
         oceanModel->bind(commandBuffers[imageIndex]);
-        oceanModel->draw(commandBuffers[imageIndex]);
+
+        for (int j = 0; j < 4; j++){
+            SimplePushConstantData push{};
+            push.offset = {-0.5f + frame*0.002f, -0.4f + j*0.25f};
+            push.color = {0.0f, 0.0f, 0.2f + j*0.2f};
+            
+            vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+            oceanModel->draw(commandBuffers[imageIndex]);
+        }
 
         vkCmdEndRenderPass(commandBuffers[imageIndex]);
         if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
