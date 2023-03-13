@@ -8,6 +8,7 @@
 // std lib headers
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace ocean {
 
@@ -16,6 +17,7 @@ class OceanSwapChain {
   static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
   OceanSwapChain(OceanDevice &deviceRef, VkExtent2D windowExtent);
+  OceanSwapChain(OceanDevice &deviceRef, VkExtent2D windowExtent, std::shared_ptr<OceanSwapChain> oldSwapChain);
   ~OceanSwapChain();
 
   OceanSwapChain(const OceanSwapChain &) = delete;
@@ -39,6 +41,7 @@ class OceanSwapChain {
   VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
 
  private:
+  void init();
   void createSwapChain();
   void createImageViews();
   void createDepthResources();
@@ -69,6 +72,7 @@ class OceanSwapChain {
   VkExtent2D windowExtent;
 
   VkSwapchainKHR swapChain;
+  std::shared_ptr<OceanSwapChain> oldSwapChain;
 
   std::vector<VkSemaphore> imageAvailableSemaphores;
   std::vector<VkSemaphore> renderFinishedSemaphores;

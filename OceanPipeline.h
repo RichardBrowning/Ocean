@@ -6,15 +6,21 @@
 
 namespace ocean {
     struct PipelineConfigInfo {
-        VkViewport viewport;
-        VkRect2D scissor;
+        PipelineConfigInfo(const PipelineConfigInfo&) = delete;
+        PipelineConfigInfo & operator = (const PipelineConfigInfo&) = delete;
+
+        //VkViewport viewport;
+        //VkRect2D scissor;
+        VkPipelineViewportStateCreateInfo viewportInfo; //avoid pviewport become null pointer when copied
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo; //
-        //VkPipelineViewportStateCreateInfo viewportInfo; //avoid pviewport become null pointer when copied
         VkPipelineRasterizationStateCreateInfo rasterizerInfo; //
         VkPipelineMultisampleStateCreateInfo multisamplingInfo; //
         VkPipelineColorBlendAttachmentState colorBlendAttachment; //
         VkPipelineColorBlendStateCreateInfo colorBlendingInfo; //
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo; //
+        std::vector<VkDynamicState> dynamicStates;
+        VkPipelineDynamicStateCreateInfo dynamicStateInfo; //
+        VkPipelineDynamicStateCreateFlags dynamicStateFlags; //
         VkPipelineLayout pipelineLayout;
         VkRenderPass renderPass = VK_NULL_HANDLE;
         uint32_t subpass = 0;
@@ -30,7 +36,7 @@ namespace ocean {
 
             void bind(VkCommandBuffer commandBuffer);
             //default configuration
-            static PipelineConfigInfo defaultPipelineConfigInfo(uint32_t width, uint32_t height);
+            static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
         private:
             static std::vector<char> readFile(const std::string& filename);

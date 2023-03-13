@@ -8,12 +8,12 @@
 namespace ocean {
     class OceanWindow {
         private:
-            void initWindow();
              int width;
              int height;
              bool frameBufferResized = false;
             std::string name;
             GLFWwindow* window;
+            void initWindow();
             static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
         public:
             OceanWindow(int width, int height, std::string name);

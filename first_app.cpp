@@ -1,5 +1,6 @@
 #include "first_app.h"
 #include <stdexcept>
+#include <cassert>
 #include <array>
 
 namespace ocean {
@@ -47,7 +48,11 @@ namespace ocean {
     }
 
     void FirstApp::createPipeline() {
-        auto pipelineConfig = OceanPipeline::defaultPipelineConfigInfo(oceanSwapChain->width(), oceanSwapChain->height());
+        assert(oceanSwapChain && "Cannot create pipeline before swap chain!");
+        assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout!");
+
+        PipelineConfigInfo pipelineConfig{};
+        OceanPipeline::defaultPipelineConfigInfo(pipelineConfig);
         pipelineConfig.renderPass = oceanSwapChain->getRenderPass();
         pipelineConfig.pipelineLayout = pipelineLayout;
         oceanPipeline = std::make_unique<OceanPipeline>(oceanDevice, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", pipelineConfig);
@@ -104,6 +109,11 @@ namespace ocean {
          */
     }
 
+    void FirstApp::freeCommandBuffers()
+    {
+        vkFreeCommandBuffers(oceanDevice.device(), oceanDevice.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+    }
+
     void FirstApp::recordCommandBuffer(int imageIndex){
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -128,6 +138,16 @@ namespace ocean {
         renderPassInfo.pClearValues = clearValues.data();
 
         vkCmdBeginRenderPass(commandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float)oceanSwapChain->getSwapChainExtent().width;
+        viewport.height = (float)oceanSwapChain->getSwapChainExtent().height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissors{{0, 0}, oceanSwapChain->getSwapChainExtent()};
+        vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissors);
 
         oceanPipeline->bind(commandBuffers[imageIndex]);
         oceanModel->bind(commandBuffers[imageIndex]);
@@ -146,7 +166,17 @@ namespace ocean {
             glfwWaitEvents();
         }
         vkDeviceWaitIdle(oceanDevice.device());
-        oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent);
+        if (oceanSwapChain == nullptr)
+            oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent);
+        else{
+            oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent, std::move(oceanSwapChain));
+            if (oceanSwapChain -> imageCount() != commandBuffers.size()) {
+                freeCommandBuffers();
+                createCommandBuffers();
+            }
+        }
+
+        //if render pass compatible do nothing else
         createPipeline();
     }
 
