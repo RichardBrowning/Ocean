@@ -7,7 +7,8 @@ namespace ocean {
     {
         loadModel();
         createPipelineLayout();
-        createPipeline();
+        //createPipeline();
+        recreateSwapChain();
         createCommandBuffers();
     }
     FirstApp::~FirstApp()
@@ -145,20 +146,29 @@ namespace ocean {
             glfwWaitEvents();
         }
         vkDeviceWaitIdle(oceanDevice.device());
+        oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent);
+        createPipeline();
     }
+
     void FirstApp::drawFrame()
     {
         uint32_t imageIndex;
         auto result = oceanSwapChain->acquireNextImage(&imageIndex);
-
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            recreateSwapChain();
+            return;
+        }
         if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
-
+        recordCommandBuffer(imageIndex);
         result = oceanSwapChain->submitCommandBuffers(&commandBuffers[imageIndex], &imageIndex);
-
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || oceanWindow.wasWindowResized()) {
+            oceanWindow.resetWindowResizedFlag();
+            recreateSwapChain();
+            return;
+        }
         //will be executed 
-
         if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain image!");
         }
