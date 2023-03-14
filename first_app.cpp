@@ -2,12 +2,14 @@
 #define GLM_FORRCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <stdexcept>
 #include <cassert>
 #include <array>
 
 namespace ocean {
     struct SimplePushConstantData {
+        glm::mat2 transform{1.f};
         glm::vec2 offset;
         //certain objects like uniform and push constants must be laid out to meet certain reqirements 
         // a scaler of size N has a scalar alignment of N
@@ -18,7 +20,7 @@ namespace ocean {
     };
     FirstApp::FirstApp()
     {
-        loadModel();
+        loadGameObjects();
         createPipelineLayout();
         //createPipeline();
         recreateSwapChain();
@@ -36,14 +38,22 @@ namespace ocean {
         }
         vkDeviceWaitIdle(oceanDevice.device());
     }
-    void FirstApp::loadModel()
-    {
+    void FirstApp::loadGameObjects(){
         std::vector<OceanModel::Vertex> vertices = {
             {{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
             {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
             {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
         };
-        oceanModel = std::make_unique<OceanModel>(oceanDevice, vertices);
+        auto oceanModel = std::make_shared<OceanModel>(oceanDevice, vertices);
+
+        auto triangle = OceanGameObject::createGameObject();
+        triangle.model = oceanModel;
+        triangle.color = {.1f, .8f, .1f};
+        triangle.transform2d.translation.x = .2f;
+        triangle.transform2d.scale = {2.f, .5f};
+        triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+
+        gameObjects.push_back(std::move(triangle));
     }
     void FirstApp::createPipelineLayout()
     {
@@ -89,42 +99,6 @@ namespace ocean {
         if(vkAllocateCommandBuffers(oceanDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate command buffers!");
         }
-        /**
-        for (int i = 0; i < commandBuffers.size(); i++){
-            VkCommandBufferBeginInfo beginInfo{};
-            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-            //if begin command buffer fails, throw an error
-            if(vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-                throw std::runtime_error("failed to begin recording command buffer!");
-            }
-
-            VkRenderPassBeginInfo renderPassInfo{};
-            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = oceanSwapChain->getRenderPass();
-            renderPassInfo.framebuffer = oceanSwapChain->getFrameBuffer(i);
-
-            renderPassInfo.renderArea.offset = {0, 0};
-            renderPassInfo.renderArea.extent = oceanSwapChain->getSwapChainExtent();
-
-            std::array<VkClearValue, 2> clearValues{};
-            clearValues[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
-            clearValues[1].depthStencil = {1.0f, 0};
-            renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-            renderPassInfo.pClearValues = clearValues.data();
-
-            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-            oceanPipeline->bind(commandBuffers[i]);
-            oceanModel->bind(commandBuffers[i]);
-            oceanModel->draw(commandBuffers[i]);
-
-            vkCmdEndRenderPass(commandBuffers[i]);
-            if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to record command buffer!");
-            }
-        }
-         */
     }
 
     void FirstApp::freeCommandBuffers()
@@ -133,10 +107,6 @@ namespace ocean {
     }
 
     void FirstApp::recordCommandBuffer(int imageIndex){
-        //animation
-        static int frame = 0;
-        frame = (frame+1)%1000;
-
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -172,17 +142,9 @@ namespace ocean {
         vkCmdSetViewport(commandBuffers[imageIndex], 0, 1, &viewport);
         vkCmdSetScissor(commandBuffers[imageIndex], 0, 1, &scissors);
 
-        oceanPipeline->bind(commandBuffers[imageIndex]);
-        oceanModel->bind(commandBuffers[imageIndex]);
-
-        for (int j = 0; j < 4; j++){
-            SimplePushConstantData push{};
-            push.offset = {-0.5f + frame*0.002f, -0.4f + j*0.25f};
-            push.color = {0.0f, 0.0f, 0.2f + j*0.2f};
-            
-            vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
-            oceanModel->draw(commandBuffers[imageIndex]);
-        }
+        //oceanPipeline->bind(commandBuffers[imageIndex]);
+        //oceanModel->bind(commandBuffers[imageIndex]);
+        renderGameObjects(commandBuffers[imageIndex]);
 
         vkCmdEndRenderPass(commandBuffers[imageIndex]);
         if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
@@ -209,6 +171,22 @@ namespace ocean {
 
         //if render pass compatible do nothing else
         createPipeline();
+    }
+    void FirstApp::renderGameObjects(VkCommandBuffer commandBuffer)
+    {
+        oceanPipeline->bind(commandBuffer);
+        for (auto& gameObject : gameObjects)
+        {
+            gameObject.transform2d.rotation = glm::mod(gameObject.transform2d.rotation + 0.01f, glm::two_pi<float>());
+            SimplePushConstantData push{};
+            push.offset = gameObject.transform2d.translation;
+            push.color = gameObject.color;
+            push.transform = gameObject.transform2d.mat2();
+            
+            vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+            gameObject.model->bind(commandBuffer);
+            gameObject.model->draw(commandBuffer);
+        }
     }
 
     void FirstApp::drawFrame()

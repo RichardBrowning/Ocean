@@ -3,7 +3,7 @@
 #include "OceanDevice.h"
 #include "OceanSwapChain.h"
 #include "OceanPipeline.h"
-#include "OceanModel.h"
+#include "OceanGameObject.h"
 #include <memory>
 #include <vector>
 
@@ -22,7 +22,7 @@ namespace ocean {
 
             void run();
         private:
-            void loadModel();
+            void loadGameObjects();
             void createPipelineLayout();
             void createPipeline();
             void createCommandBuffers();
@@ -31,6 +31,7 @@ namespace ocean {
 
             void recreateSwapChain();
             void recordCommandBuffer( int imageIndex);
+            void renderGameObjects(VkCommandBuffer commandBuffer);
 
             OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
             OceanDevice oceanDevice{oceanWindow};
@@ -39,6 +40,6 @@ namespace ocean {
             std::unique_ptr<OceanPipeline> oceanPipeline; //{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
             VkPipelineLayout pipelineLayout;
             std::vector<VkCommandBuffer> commandBuffers;
-            std::unique_ptr<OceanModel> oceanModel;
+            std::vector<OceanGameObject> gameObjects;
     };
 }
