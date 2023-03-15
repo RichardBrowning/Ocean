@@ -1,7 +1,7 @@
 #pragma once
 #include "OceanWindow.h"
 #include "OceanDevice.h"
-#include "OceanSwapChain.h"
+#include "OceanRenderer.h"
 #include "OceanPipeline.h"
 #include "OceanGameObject.h"
 #include <memory>
@@ -25,17 +25,11 @@ namespace ocean {
             void loadGameObjects();
             void createPipelineLayout();
             void createPipeline();
-            void createCommandBuffers();
-            void freeCommandBuffers();
-            void drawFrame();
-
-            void recreateSwapChain();
-            void recordCommandBuffer( int imageIndex);
             void renderGameObjects(VkCommandBuffer commandBuffer);
 
             OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
             OceanDevice oceanDevice{oceanWindow};
-            // OceanSwapChain oceanSwapChain{oceanDevice, oceanWindow.getExtent()};
+            OceanRenderer oceanRenderer{oceanWindow, oceanDevice};
             std::unique_ptr<OceanSwapChain> oceanSwapChain;
             std::unique_ptr<OceanPipeline> oceanPipeline; //{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
             VkPipelineLayout pipelineLayout;

@@ -1,0 +1,140 @@
+#include "OceanRenderer.h"
+#include <stdexcept>
+#include <cassert>
+#include <array>
+
+namespace ocean{
+    OceanRenderer::OceanRenderer(OceanWindow &window, OceanDevice &device) : oceanWindow(window), oceanDevice(device){
+        recreateSwapChain();
+        createCommandBuffers();
+    }
+
+
+    OceanRenderer::~OceanRenderer()
+    {
+        freeCommandBuffers();
+    }
+
+    void OceanRenderer::createCommandBuffers()
+    {
+        commandBuffers.resize(oceanSwapChain->imageCount());
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = oceanDevice.getCommandPool();
+        allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+        if(vkAllocateCommandBuffers(oceanDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate command buffers!");
+        }
+    }
+
+    void OceanRenderer::recreateSwapChain(){
+        auto extent = oceanWindow.getExtent();
+        while (extent.width == 0 || extent.height == 0) {
+            extent = oceanWindow.getExtent();
+            glfwWaitEvents();
+        }
+        vkDeviceWaitIdle(oceanDevice.device());
+        if (oceanSwapChain == nullptr)
+            oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent);
+        else{
+            oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent, std::move(oceanSwapChain));
+            if (oceanSwapChain -> imageCount() != commandBuffers.size()) {
+                freeCommandBuffers();
+                createCommandBuffers();
+            }
+        }
+        //
+    }
+
+    void OceanRenderer::freeCommandBuffers()
+    {
+        vkFreeCommandBuffers(oceanDevice.device(), oceanDevice.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+        commandBuffers.clear();
+    }
+    
+    VkCommandBuffer OceanRenderer::beginFrame(){
+        assert(!isFrameStarted && "Cannot call beginFrame while already in a progress.");
+        auto result = oceanSwapChain->acquireNextImage(&currentImageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+            recreateSwapChain();
+            return nullptr;
+        }
+        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+            throw std::runtime_error("failed to acquire swap chain image!");
+        }
+
+        isFrameStarted = true;
+        auto commandBuffer = getCurrentCommandBuffer();
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+        //if begin command buffer fails, throw an error
+        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+            throw std::runtime_error("failed to begin recording command buffer!");
+        }
+        return commandBuffer;
+    }
+
+    void OceanRenderer::endFrame()
+    {
+        assert(isFrameStarted && "Cannot call endFrame while not in a progress.");
+        auto commandBuffer = getCurrentCommandBuffer();
+        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+            throw std::runtime_error("failed to record command buffer!");
+        }
+
+        auto result = oceanSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || oceanWindow.wasWindowResized()) {
+            oceanWindow.resetWindowResizedFlag();
+            recreateSwapChain();
+        }
+        //will be executed 
+        else if (result != VK_SUCCESS) {
+            throw std::runtime_error("failed to present swap chain image!");
+        }
+        OceanRenderer::isFrameStarted = false;
+    }
+
+    void OceanRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
+    {
+        assert(isFrameStarted && "Cannot call beginSwapChainRenderPass while not in a progress.");
+        assert(commandBuffer == getCurrentCommandBuffer() && "Cannot begin render pass on command buffer from a different frame.");
+        
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = oceanSwapChain->getRenderPass();
+        renderPassInfo.framebuffer = oceanSwapChain->getFrameBuffer(currentImageIndex);
+
+        renderPassInfo.renderArea.offset = {0, 0};
+        renderPassInfo.renderArea.extent = oceanSwapChain->getSwapChainExtent();
+
+        std::array<VkClearValue, 2> clearValues{};
+        //darker BG
+        clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f};
+        clearValues[1].depthStencil = {1.0f, 0};
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
+
+        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float)oceanSwapChain->getSwapChainExtent().width;
+        viewport.height = (float)oceanSwapChain->getSwapChainExtent().height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissors{{0, 0}, oceanSwapChain->getSwapChainExtent()};
+        vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissors);
+    }
+
+    void OceanRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer)
+    {
+        assert(isFrameStarted && "Cannot call endSwapChainRenderPass while not in a progress.");
+        assert(commandBuffer == getCurrentCommandBuffer() && "Cannot end render pass on command buffer from a different frame.");
+
+        vkCmdEndRenderPass(commandBuffer);
+    }
+}
