@@ -22,7 +22,7 @@ namespace ocean {
             
             VkCommandBuffer getCurrentCommandBuffer() const { 
                 assert(isFrameStarted && "Frame is not started, cannot get command buffer!");
-                return commandBuffers[currentImageIndex]; 
+                return commandBuffers[currentFrameIndex]; //this typo wasted 6 hours of my life
             }
             int getFrameIndex() const {
                 assert(isFrameStarted && "Cannot get frame index when frame not in progress!");
