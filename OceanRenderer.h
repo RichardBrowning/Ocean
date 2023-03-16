@@ -16,22 +16,28 @@ namespace ocean {
             OceanRenderer(const OceanRenderer&) = delete;
             OceanRenderer& operator = (const OceanRenderer&) = delete;
 
-            VkRenderPass getSwapChainRenderPass() const {return oceanSwapChain->getRenderPass(); }
+            VkRenderPass getSwapChainRenderPass() const { return oceanSwapChain->getRenderPass(); }
+
             bool isFrameInProgress() const { return isFrameStarted; }
+            
             VkCommandBuffer getCurrentCommandBuffer() const { 
                 assert(isFrameStarted && "Frame is not started, cannot get command buffer!");
-                return commandBuffers[currentImageIndex]; }
-            
+                return commandBuffers[currentImageIndex]; 
+            }
+            int getFrameIndex() const {
+                assert(isFrameStarted && "Cannot get frame index when frame not in progress!");
+                return currentFrameIndex;
+            }
             //start frame
             VkCommandBuffer beginFrame();
             //end frame
             void endFrame();
-
             void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
             void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
         private:
             uint32_t currentImageIndex;
-            bool isFrameStarted;
+            int currentFrameIndex;
+            bool isFrameStarted{false};
 
             void createCommandBuffers();
             void freeCommandBuffers();
