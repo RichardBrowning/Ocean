@@ -24,33 +24,80 @@ namespace ocean {
                 //render shadow castign objects
                 //end offscreen shadow pass
                 oceanRenderer.beginSwapChainRenderPass(commandBuffer);
-
                 oceanRenderSystem.renderGameObjects(commandBuffer, gameObjects);
-
                 oceanRenderer.endSwapChainRenderPass(commandBuffer);
-
                 oceanRenderer.endFrame();
-
             }
         }
         std::cout << "Frame finished" << std::endl;
         vkDeviceWaitIdle(oceanDevice.device());
     }
-    void FirstApp::loadGameObjects(){
-        std::vector<OceanModel::Vertex> vertices = {
-            {{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    std::unique_ptr<OceanModel> createCubeModel(OceanDevice& device, glm::vec3 offset) {
+        std::vector<OceanModel::Vertex> vertices{
+        
+            // left face (white)
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+        
+            // right face (yellow)
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+        
+            // top face (orange, remember y axis points down)
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+        
+            // bottom face (red)
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+        
+            // nose face (blue)
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+        
+            // tail face (green)
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+        
         };
-        auto oceanModel = std::make_shared<OceanModel>(oceanDevice, vertices);
+        for (auto& v : vertices) {
+            v.position += offset;
+        }
+        return std::make_unique<OceanModel>(device, vertices);
+    }
+    
+    void FirstApp::loadGameObjects(){
+        std::shared_ptr<OceanModel> oceanModel = createCubeModel(oceanDevice, {.0f, .0f, .0f});
+        auto cube = OceanGameObject::createGameObject();
+        cube.model = oceanModel;
+        cube.transform.translation = {.0f,.0f,.5f};
+        cube.transform.scale = {.5f, .5f, .5f};
+        //cube.transform.rotation = .25f * glm::two_pi<float>();
 
-        auto triangle = OceanGameObject::createGameObject();
-        triangle.model = oceanModel;
-        triangle.color = {.1f, .8f, .1f};
-        triangle.transform2d.translation.x = .2f;
-        triangle.transform2d.scale = {2.f, .5f};
-        triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-
-        gameObjects.push_back(std::move(triangle));
+        gameObjects.push_back(std::move(cube));
     }
 }
