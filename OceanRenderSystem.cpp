@@ -15,8 +15,8 @@ namespace ocean {
         // a 2 component vector has a base alignment equal to 2* its scalar alignment
         // scalar float N = 4 bytes, vec2 = 2*4 = 8 bytes, vec3 = 4N = 16 bytes
     struct SimplePushConstantData {
-        glm::mat2 transform{1.f};
-        glm::vec2 offset;
+        glm::mat4 transform{1.f};
+        // glm::vec3 offset; pushed to transaform with homogeneous coordinates
         alignas(16) glm::vec3 color;
     };
 
@@ -60,17 +60,17 @@ namespace ocean {
         VkCommandBuffer commandBuffer, std::vector<OceanGameObject>& gameObjects) {
         oceanPipeline->bind(commandBuffer);
 
-        for (auto& obj : gameObjects) {
-            obj.transform2d.rotation = glm::mod(obj.transform2d.rotation + 0.01f, glm::two_pi<float>());
+        for (auto& gameObject : gameObjects) {
+            gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y + 0.01f, glm::two_pi<float>());
+            gameObject.transform.rotation.x = glm::mod(gameObject.transform.rotation.x + 0.005f, glm::two_pi<float>());
 
             SimplePushConstantData push{};
-            push.offset = obj.transform2d.translation;
-            push.color = obj.color;
-            push.transform = obj.transform2d.mat2();
+            push.color = gameObject.color;
+            push.transform = gameObject.transform.mat4();
 
             vkCmdPushConstants(commandBuffer,pipelineLayout,VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,0,sizeof(SimplePushConstantData),&push);
-            obj.model->bind(commandBuffer);
-            obj.model->draw(commandBuffer);
+            gameObject.model->bind(commandBuffer);
+            gameObject.model->draw(commandBuffer);
         }
     }
 }
