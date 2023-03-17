@@ -17,7 +17,7 @@ namespace ocean {
     struct SimplePushConstantData {
         glm::mat4 transform{1.f};
         // glm::vec3 offset; pushed to transaform with homogeneous coordinates
-        alignas(16) glm::vec3 color;
+        alignas(16) glm::vec3 color{};
     };
 
     OceanRenderSystem::OceanRenderSystem(OceanDevice& device, VkRenderPass renderPass) : oceanDevice{device} {
