@@ -6,23 +6,26 @@
 
 namespace ocean {
     struct PipelineConfigInfo {
+        PipelineConfigInfo() = default;
         PipelineConfigInfo(const PipelineConfigInfo&) = delete;
         PipelineConfigInfo & operator = (const PipelineConfigInfo&) = delete;
 
         //VkViewport viewport;
         //VkRect2D scissor;
+        std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
         VkPipelineViewportStateCreateInfo viewportInfo; //avoid pviewport become null pointer when copied
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo; //
-        VkPipelineRasterizationStateCreateInfo rasterizerInfo; //
-        VkPipelineMultisampleStateCreateInfo multisamplingInfo; //
+        VkPipelineRasterizationStateCreateInfo rasterizationInfo; //
+        VkPipelineMultisampleStateCreateInfo multisampleInfo; //
         VkPipelineColorBlendAttachmentState colorBlendAttachment; //
-        VkPipelineColorBlendStateCreateInfo colorBlendingInfo; //
+        VkPipelineColorBlendStateCreateInfo colorBlendInfo; //
         VkPipelineDepthStencilStateCreateInfo depthStencilInfo; //
-        std::vector<VkDynamicState> dynamicStates;
+        std::vector<VkDynamicState> dynamicStateEnables;
         VkPipelineDynamicStateCreateInfo dynamicStateInfo; //
-        VkPipelineDynamicStateCreateFlags dynamicStateFlags; //
-        VkPipelineLayout pipelineLayout;
-        VkRenderPass renderPass = VK_NULL_HANDLE;
+        //VkPipelineDynamicStateCreateFlags dynamicStateFlags; //
+        VkPipelineLayout pipelineLayout = nullptr;
+        VkRenderPass renderPass = nullptr;
         uint32_t subpass = 0;
     };
     class OceanPipeline {
@@ -40,10 +43,7 @@ namespace ocean {
 
         private:
             static std::vector<char> readFile(const std::string& filename);
-            void createGraphicsPipeline(
-                const std::string& vertShaderPath, 
-                const std::string& fragShaderPath, 
-                const PipelineConfigInfo& configInfo);
+            void createGraphicsPipeline( const std::string& vertShaderPath, const std::string& fragShaderPath, const PipelineConfigInfo& configInfo);
             //add shader module
             void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 
