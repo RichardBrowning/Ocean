@@ -10,8 +10,8 @@
 
 namespace ocean {
     struct SimplePushConstantData {
-        glm::mat2 transform{1.f};
-        glm::vec2 offset;
+        glm::mat4 transform{1.f};
+        // glm::vec3 offset; pushed to transaform with homogeneous coordinates
         //certain objects like uniform and push constants must be laid out to meet certain reqirements 
         // a scaler of size N has a scalar alignment of N
         // a 2 component vector has a base alignment equal to 2* its scalar alignment
@@ -62,11 +62,11 @@ namespace ocean {
         oceanPipeline->bind(commandBuffer);
         for (auto& gameObject : gameObjects)
         {
-            gameObject.transform2d.rotation = glm::mod(gameObject.transform2d.rotation + 0.01f, glm::two_pi<float>());
+            gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y + 0.01f, glm::two_pi<float>());
+            gameObject.transform.rotation.x = glm::mod(gameObject.transform.rotation.x + 0.005f, glm::two_pi<float>());
             SimplePushConstantData push{};
-            push.offset = gameObject.transform2d.translation;
             push.color = gameObject.color;
-            push.transform = gameObject.transform2d.mat2();
+            push.transform = gameObject.transform.mat4();
             
             vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
             gameObject.model->bind(commandBuffer);
