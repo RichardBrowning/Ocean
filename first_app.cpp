@@ -38,7 +38,7 @@ namespace ocean {
             {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
             {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
         
-            // right face (yellow)
+            // right face (yellow) // white
             {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
             {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
             {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
@@ -46,7 +46,8 @@ namespace ocean {
             {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
             {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
         
-            // top face (orange, remember y axis points down)
+            // top face (orange, remember y axis points down) //red
+
             {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
             {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
             {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
@@ -62,7 +63,7 @@ namespace ocean {
             {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
             {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
         
-            // nose face (blue)
+            // nose face (blue) //green
             {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
             {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
             {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
