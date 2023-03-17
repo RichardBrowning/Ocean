@@ -1,10 +1,16 @@
 #include "OceanWindow.h"
+#include <stdexcept>
 
 namespace ocean{
     //LESSON: std::initializer_list for const variables initialization
     OceanWindow::OceanWindow(int width, int height, std::string name) : width{width}, height{height}, name{name}
     {
         initWindow();
+    }
+    OceanWindow::~OceanWindow()
+    {
+        glfwDestroyWindow(window);
+        glfwTerminate();
     }
 
     void OceanWindow::initWindow()
@@ -19,11 +25,6 @@ namespace ocean{
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     }
 
-    OceanWindow::~OceanWindow()
-    {
-        glfwDestroyWindow(window);
-        glfwTerminate();
-    }
     //window suface, like WebGL context, take a vk instance and a vk surface 
     void OceanWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface)
     {

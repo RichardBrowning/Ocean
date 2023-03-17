@@ -12,12 +12,11 @@ namespace ocean {
             static constexpr int WIDTH = 800;
             static constexpr int HEIGHT = 600;
             const std::string NAME = "First App";
+            
             FirstApp();
             ~FirstApp();
-
-            //delete copy constructor and copy assignment operator
-            FirstApp(const FirstApp&) = delete;
-            FirstApp& operator = (const FirstApp&) = delete;
+            FirstApp(const FirstApp &) = delete;
+            FirstApp &operator=(const FirstApp &) = delete;
 
             void run();
         private:

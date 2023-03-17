@@ -8,21 +8,21 @@
 namespace ocean {
     class OceanRenderSystem {
         public:
-            OceanRenderSystem(OceanDevice &device, VkRenderPass renderPass);
-            ~OceanRenderSystem();
+        OceanRenderSystem(OceanDevice &device, VkRenderPass renderPass);
+        ~OceanRenderSystem();
 
-            //delete copy constructor and copy assignment operator
-            OceanRenderSystem(const OceanRenderSystem&) = delete;
-            OceanRenderSystem& operator = (const OceanRenderSystem&) = delete;
+        OceanRenderSystem(const OceanRenderSystem &) = delete;
+        OceanRenderSystem &operator=(const OceanRenderSystem &) = delete;
 
-            void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects);
+        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects);
+
         private:
-            void createPipelineLayout();
-            void createPipeline(VkRenderPass renderPass);
+        void createPipelineLayout();
+        void createPipeline(VkRenderPass renderPass);
 
-            OceanDevice &oceanDevice;
+        OceanDevice &oceanDevice;
 
-            std::unique_ptr<OceanPipeline> oceanPipeline; 
-            VkPipelineLayout pipelineLayout;
+        std::unique_ptr<OceanPipeline> oceanPipeline;
+        VkPipelineLayout pipelineLayout;
     };
 }
