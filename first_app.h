@@ -3,6 +3,7 @@
 #include "OceanDevice.h"
 #include "OceanGameObject.h"
 #include "OceanRenderer.h"
+#include "OceanPerspectiveCamera.h"
 #include <memory>
 #include <vector>
 

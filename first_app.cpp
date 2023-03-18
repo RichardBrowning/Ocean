@@ -15,11 +15,15 @@ namespace ocean {
 
     void FirstApp::run() {
         OceanRenderSystem renderSystem{oceanDevice, oceanRenderer.getSwapChainRenderPass()};
+        OceanPerspectiveCamera camera{};
         while (!oceanWindow.shouldClose()) {
             glfwPollEvents();
+            float aspect = oceanRenderer.getAspectRatio();
+            //camera.setOrthographicProjection(-aspect,aspect,-1,1,-1,1); 
+            camera.setPerspectiveProjection(glm::radians(50.0f), aspect, .1f, 20.f);//always kept updated with the window resize, left & right = aspect
             if (auto commandBuffer = oceanRenderer.beginFrame()) {
                 oceanRenderer.beginSwapChainRenderPass(commandBuffer);
-                renderSystem.renderGameObjects(commandBuffer, gameObjects);
+                renderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 oceanRenderer.endSwapChainRenderPass(commandBuffer);
                 oceanRenderer.endFrame();
         }
@@ -89,7 +93,7 @@ namespace ocean {
         std::shared_ptr<OceanModel> oceanModel = createCubeModel(oceanDevice, {.0f, .0f, .0f});
         auto cube = OceanGameObject::createGameObject();
         cube.model = oceanModel;
-        cube.transform.translation = {.0f,.0f,.5f};
+        cube.transform.translation = {.0f,.0f,3.f};
         cube.transform.scale = {.5f, .5f, .5f};
         gameObjects.push_back(std::move(cube));
     }

@@ -17,7 +17,7 @@ namespace ocean {
 
         VkRenderPass getSwapChainRenderPass() const { return oceanSwapChain->getRenderPass(); }
         bool isFrameInProgress() const { return isFrameStarted; }
-
+        float getAspectRatio() const {return oceanSwapChain->extentAspectRatio();}
         VkCommandBuffer getCurrentCommandBuffer() const {
             assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
             return commandBuffers[currentFrameIndex];

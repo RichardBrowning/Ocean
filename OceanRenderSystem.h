@@ -2,6 +2,7 @@
 #include "OceanDevice.h"
 #include "OceanPipeline.h"
 #include "OceanGameObject.h"
+#include "OceanPerspectiveCamera.h"
 #include <memory>
 #include <vector>
 
@@ -14,7 +15,7 @@ namespace ocean {
         OceanRenderSystem(const OceanRenderSystem &) = delete;
         OceanRenderSystem &operator=(const OceanRenderSystem &) = delete;
 
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects);
+        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects, const OceanPerspectiveCamera &camera);
 
         private:
         void createPipelineLayout();

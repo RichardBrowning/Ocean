@@ -56,8 +56,7 @@ namespace ocean {
         oceanPipeline = std::make_unique<OceanPipeline>(oceanDevice,"shaders/simple_shader.vert.spv","shaders/simple_shader.frag.spv",pipelineConfig);
     }
 
-    void OceanRenderSystem::renderGameObjects(
-        VkCommandBuffer commandBuffer, std::vector<OceanGameObject>& gameObjects) {
+    void OceanRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject>& gameObjects, const OceanPerspectiveCamera &camera) {
         oceanPipeline->bind(commandBuffer);
 
         for (auto& gameObject : gameObjects) {
@@ -66,7 +65,7 @@ namespace ocean {
 
             SimplePushConstantData push{};
             push.color = gameObject.color;
-            push.transform = gameObject.transform.mat4();
+            push.transform = camera.getProjection() * gameObject.transform.mat4();
 
             vkCmdPushConstants(commandBuffer,pipelineLayout,VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,0,sizeof(SimplePushConstantData),&push);
             gameObject.model->bind(commandBuffer);
