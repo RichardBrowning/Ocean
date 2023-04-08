@@ -22,18 +22,11 @@ namespace ocean {
 
             void run();
         private:
-            void loadGameObjects();
-            void createPipelineLayout();
-            void createPipeline();
-            void renderGameObjects(VkCommandBuffer commandBuffer);
-
             OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
             OceanDevice oceanDevice{oceanWindow};
             OceanRenderer oceanRenderer{oceanWindow, oceanDevice};
-            std::unique_ptr<OceanSwapChain> oceanSwapChain;
-            std::unique_ptr<OceanPipeline> oceanPipeline; //{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
-            VkPipelineLayout pipelineLayout;
-            std::vector<VkCommandBuffer> commandBuffers;
+
             std::vector<OceanGameObject> gameObjects;
+            void loadGameObjects();
     };
 }

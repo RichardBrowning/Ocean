@@ -9,7 +9,6 @@ namespace ocean{
         createCommandBuffers();
     }
 
-
     OceanRenderer::~OceanRenderer()
     {
         freeCommandBuffers();
