@@ -174,7 +174,7 @@ void OceanSwapChain::createSwapChain() {
 
   createInfo.oldSwapchain = oldSwapChain == nullptr ? VK_NULL_HANDLE : oldSwapChain->swapChain;
 
-  createInfo.oldSwapchain = VK_NULL_HANDLE;
+  // createInfo.oldSwapchain = VK_NULL_HANDLE;
 
   if (vkCreateSwapchainKHR(device.device(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
     throw std::runtime_error("failed to create swap chain!");
