@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <cassert>
 #include <array>
+// #include <iostream>
 
 namespace ocean {
     FirstApp::FirstApp()
@@ -42,9 +43,13 @@ namespace ocean {
                 //begin offscreen shadow pass
                 //render shadow castign objects
                 //end offscreen shadow pass
+                // std::cout << "0" <<std::endl;
                 oceanRenderer.beginSwapChainRenderPass(commandBuffer);
+                // std::cout << "1" << std::endl;
                 renderSystem.renderGameObjects(commandBuffer, gameObjects);
+                // std::cout << "2" << std::endl;
                 oceanRenderer.endSwapChainRenderPass(commandBuffer);
+                // std::cout << "3" << std::endl;
                 oceanRenderer.endFrame();
             }
         }

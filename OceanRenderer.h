@@ -23,9 +23,10 @@ namespace ocean {
 
             VkRenderPass getSwapChainRenderPass() const { return oceanSwapChain->getRenderPass(); }
             bool isFrameInProgress() const { return isFrameStarted; }
+
             VkCommandBuffer getCurrentCommandBuffer() const { 
                 assert(isFrameStarted && "Frame is not started, cannot get command buffer!");
-                return commandBuffers[currentImageIndex]; }
+                return commandBuffers[currentFrameIndex]; }
 
             void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
             void endSwapChainRenderPass(VkCommandBuffer commandBuffer);

@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <cassert>
 #include <array>
+// #include <iostream>
 
 namespace ocean{
     OceanRenderer::OceanRenderer(OceanWindow &window, OceanDevice &device) : oceanWindow(window), oceanDevice(device){
@@ -15,6 +16,8 @@ namespace ocean{
     }
 
     VkCommandBuffer OceanRenderer::beginFrame(){
+        // std::cout << "start begin frame"<<std::endl;
+        // std::cout << "in the mid" << std::endl;
         assert(!isFrameStarted && "Cannot call beginFrame while already in a progress.");
         auto result = oceanSwapChain->acquireNextImage(&currentImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -25,13 +28,13 @@ namespace ocean{
             throw std::runtime_error("failed to acquire swap chain image!");
         isFrameStarted = true;
         auto commandBuffer = getCurrentCommandBuffer();
-
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
         //if begin command buffer fails, throw an error
         if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
             throw std::runtime_error("failed to begin recording command buffer!");
+        // std::cout << "end begin frame"<<std::endl;
         return commandBuffer;
     }
 
