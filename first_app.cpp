@@ -21,7 +21,7 @@ namespace ocean {
             {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
             {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
         };
-        auto oceanModel = std::make_shared<OceanModel>(oceanDevice, vertices);
+        auto oceanModel = std::make_shared<OceanModel>(FirstApp::oceanDevice, vertices);
 
         auto triangle = OceanGameObject::createGameObject();
         triangle.model = oceanModel;

@@ -2,7 +2,6 @@
 #include "OceanWindow.h"
 #include "OceanDevice.h"
 #include "OceanRenderer.h"
-#include "OceanPipeline.h"
 #include "OceanGameObject.h"
 #include <memory>
 #include <vector>
@@ -25,8 +24,8 @@ namespace ocean {
             OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
             OceanDevice oceanDevice{oceanWindow};
             OceanRenderer oceanRenderer{oceanWindow, oceanDevice};
-
             std::vector<OceanGameObject> gameObjects;
+            
             void loadGameObjects();
     };
 }

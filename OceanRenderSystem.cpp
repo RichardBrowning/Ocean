@@ -16,7 +16,7 @@ namespace ocean {
         // a 2 component vector has a base alignment equal to 2* its scalar alignment
         // scalar float N = 4 bytes, vec2 = 2*4 = 8 bytes, vec3 = 4N = 16 bytes
         alignas(16) glm::vec3 color;
-        float scale;
+        // float scale;
     };
     OceanRenderSystem::OceanRenderSystem(OceanDevice &device, VkRenderPass renderPass) : oceanDevice{device}
     {
@@ -43,7 +43,7 @@ namespace ocean {
         pipelineLayoutInfo.pushConstantRangeCount = 1; 
         pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; //way to efficiently pass A SMALL AMOUNT OF DATA to shaders
         //device documentation ## 
-        if(vkCreatePipelineLayout(oceanDevice.device(), &pipelineLayoutInfo, nullptr/**allocation callback*/, &pipelineLayout) != VK_SUCCESS) {
+        if(vkCreatePipelineLayout(OceanRenderSystem::oceanDevice.device(), &pipelineLayoutInfo, nullptr/**allocation callback*/, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
     }

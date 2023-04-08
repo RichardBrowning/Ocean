@@ -301,6 +301,7 @@ void OceanSwapChain::createFramebuffers() {
 
 void OceanSwapChain::createDepthResources() {
   VkFormat depthFormat = findDepthFormat();
+  OceanSwapChain::swapChainDepthFormat = depthFormat;
   VkExtent2D swapChainExtent = getSwapChainExtent();
 
   depthImages.resize(imageCount());

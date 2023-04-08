@@ -14,44 +14,6 @@ namespace ocean{
         freeCommandBuffers();
     }
 
-    void OceanRenderer::createCommandBuffers()
-    {
-        commandBuffers.resize(oceanSwapChain->imageCount());
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = oceanDevice.getCommandPool();
-        allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
-        if(vkAllocateCommandBuffers(oceanDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate command buffers!");
-        }
-    }
-
-    void OceanRenderer::recreateSwapChain(){
-        auto extent = oceanWindow.getExtent();
-        while (extent.width == 0 || extent.height == 0) {
-            extent = oceanWindow.getExtent();
-            glfwWaitEvents();
-        }
-        vkDeviceWaitIdle(oceanDevice.device());
-        if (oceanSwapChain == nullptr)
-            oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent);
-        else{
-            oceanSwapChain = std::make_unique<OceanSwapChain>(oceanDevice, extent, std::move(oceanSwapChain));
-            if (oceanSwapChain -> imageCount() != commandBuffers.size()) {
-                freeCommandBuffers();
-                createCommandBuffers();
-            }
-        }
-        //
-    }
-
-    void OceanRenderer::freeCommandBuffers()
-    {
-        vkFreeCommandBuffers(oceanDevice.device(), oceanDevice.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
-        commandBuffers.clear();
-    }
-    
     VkCommandBuffer OceanRenderer::beginFrame(){
         assert(!isFrameStarted && "Cannot call beginFrame while already in a progress.");
         auto result = oceanSwapChain->acquireNextImage(&currentImageIndex);
@@ -59,10 +21,8 @@ namespace ocean{
             recreateSwapChain();
             return nullptr;
         }
-        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
             throw std::runtime_error("failed to acquire swap chain image!");
-        }
-
         isFrameStarted = true;
         auto commandBuffer = getCurrentCommandBuffer();
 
@@ -70,9 +30,8 @@ namespace ocean{
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
         //if begin command buffer fails, throw an error
-        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+        if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
             throw std::runtime_error("failed to begin recording command buffer!");
-        }
         return commandBuffer;
     }
 
@@ -80,9 +39,8 @@ namespace ocean{
     {
         assert(isFrameStarted && "Cannot call endFrame while not in a progress.");
         auto commandBuffer = getCurrentCommandBuffer();
-        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
             throw std::runtime_error("failed to record command buffer!");
-        }
 
         auto result = oceanSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || oceanWindow.wasWindowResized()) {
@@ -90,10 +48,52 @@ namespace ocean{
             recreateSwapChain();
         }
         //will be executed 
-        else if (result != VK_SUCCESS) {
+        else if (result != VK_SUCCESS)
             throw std::runtime_error("failed to present swap chain image!");
-        }
         OceanRenderer::isFrameStarted = false;
+        OceanRenderer::currentFrameIndex = (OceanRenderer::currentFrameIndex + 1) % OceanSwapChain::MAX_FRAMES_IN_FLIGHT; 
+    }
+
+    void OceanRenderer::createCommandBuffers()
+    {
+        // commandBuffers.resize(oceanSwapChain->imageCount());
+        commandBuffers.resize(OceanSwapChain::MAX_FRAMES_IN_FLIGHT);
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = oceanDevice.getCommandPool();
+        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+        if(vkAllocateCommandBuffers(oceanDevice.device(), &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate command buffers!");
+        }
+    }
+
+    void OceanRenderer::recreateSwapChain(){
+        auto extent = OceanRenderer::oceanWindow.getExtent();
+        while (extent.width == 0 || extent.height == 0) {
+            extent = OceanRenderer::oceanWindow.getExtent();
+            glfwWaitEvents();
+        }
+        vkDeviceWaitIdle(OceanRenderer::oceanDevice.device());
+        if (OceanRenderer::oceanSwapChain == nullptr)
+            OceanRenderer::oceanSwapChain = std::make_unique<OceanSwapChain>(OceanRenderer::oceanDevice, extent);
+        else{
+            std::shared_ptr<OceanSwapChain> oldSwapChain = std::move(OceanRenderer::oceanSwapChain);
+            OceanRenderer::oceanSwapChain = std::make_unique<OceanSwapChain>(OceanRenderer::oceanDevice, extent, oldSwapChain);
+            if (!oldSwapChain->compareSwapchainFormats(*OceanRenderer::oceanSwapChain.get())){
+                throw std::runtime_error("Swapchain image or depth format has changed.");
+            }
+            // if (OceanRenderer::oceanSwapChain -> imageCount() != OceanRenderer::commandBuffers.size()) {
+            //     freeCommandBuffers();
+            //     createCommandBuffers();
+            // }
+        }
+    }
+
+    void OceanRenderer::freeCommandBuffers()
+    {
+        vkFreeCommandBuffers(oceanDevice.device(), oceanDevice.getCommandPool(), static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+        commandBuffers.clear();
     }
 
     void OceanRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
@@ -120,13 +120,13 @@ namespace ocean{
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = (float)oceanSwapChain->getSwapChainExtent().width;
-        viewport.height = (float)oceanSwapChain->getSwapChainExtent().height;
+        viewport.width = static_cast<float>(oceanSwapChain->getSwapChainExtent().width);
+        viewport.height = static_cast<float>(oceanSwapChain->getSwapChainExtent().height);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
-        VkRect2D scissors{{0, 0}, oceanSwapChain->getSwapChainExtent()};
+        VkRect2D scissor{{0, 0}, oceanSwapChain->getSwapChainExtent()};
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-        vkCmdSetScissor(commandBuffer, 0, 1, &scissors);
+        vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
     }
 
     void OceanRenderer::endSwapChainRenderPass(VkCommandBuffer commandBuffer)
