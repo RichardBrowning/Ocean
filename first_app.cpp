@@ -7,11 +7,12 @@
 #include <stdexcept>
 #include <cassert>
 #include <array>
-// #include <iostream>
+#include <iostream>
 
 namespace ocean {
     FirstApp::FirstApp()
     {
+        std::cout << "first cpp starts" << std::endl;
         loadGameObjects();
     }
     FirstApp::~FirstApp(){}
@@ -32,10 +33,13 @@ namespace ocean {
         triangle.transform2d.rotation = .25f * glm::two_pi<float>();
 
         gameObjects.push_back(std::move(triangle));
+        std::cout << "game objects loaded" << std::endl;
     }
 
     void FirstApp::run() {
+        std::cout << "run starts" << std::endl;
         OceanRenderSystem renderSystem{ oceanDevice, oceanRenderer.getSwapChainRenderPass() } ;
+        std::cout << "render system created" << std::endl;
         while(!oceanWindow.shouldClose()) {
             glfwPollEvents();
             //the begin fram function will return a null function if the swap chain need to be recreated

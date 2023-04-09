@@ -36,8 +36,8 @@ namespace ocean {
             }
         private:
             uint32_t currentImageIndex;
-            int currentFrameIndex;
-            bool isFrameStarted;
+            int currentFrameIndex{0};
+            bool isFrameStarted{false};
             OceanWindow &oceanWindow;
             OceanDevice &oceanDevice;
             std::unique_ptr<OceanSwapChain> oceanSwapChain;
