@@ -65,8 +65,8 @@ namespace ocean {
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
-        auto bindingDescription = OceanModel::Vertex::getBindingDescriptions();
-        auto attributeDescription = OceanModel::Vertex::getAttributeDescriptions();
+        auto& bindingDescription = configInfo.bindingDescriptions;
+        auto& attributeDescription = configInfo.attributeDescriptions;
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescription.size());
