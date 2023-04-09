@@ -7,39 +7,88 @@
 #include <stdexcept>
 #include <cassert>
 #include <array>
-#include <iostream>
+// #include <iostream>
 
 namespace ocean {
     FirstApp::FirstApp()
     {
-        std::cout << "first cpp starts" << std::endl;
+        // std::cout << "first cpp starts" << std::endl;
         loadGameObjects();
     }
     FirstApp::~FirstApp(){}
 
-    void FirstApp::loadGameObjects(){
-        std::vector<OceanModel::Vertex> vertices = {
-            {{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    std::unique_ptr<OceanModel> createCubeModel(OceanDevice& device, glm::vec3 offset) {
+        std::vector<OceanModel::Vertex> vertices{
+        
+            // left face (white)
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+            {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+        
+            // right face (yellow)
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+            {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+        
+            // top face (orange, remember y axis points down)
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+            {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+            {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+        
+            // bottom face (red)
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+            {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+            {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+        
+            // nose face (blue)
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+            {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+            {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+        
+            // tail face (green)
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+            {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+            {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+        
         };
-        auto oceanModel = std::make_shared<OceanModel>(FirstApp::oceanDevice, vertices);
+        for (auto& v : vertices) {
+            v.position += offset;
+        }
+        return std::make_unique<OceanModel>(device, vertices);
+    }
 
-        auto triangle = OceanGameObject::createGameObject();
-        triangle.model = oceanModel;
-        triangle.color = {.1f, .8f, .1f};
-        triangle.transform2d.translation.x = .2f;
-        triangle.transform2d.scale = {2.f, .5f};
-        triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+    void FirstApp::loadGameObjects(){
+        std::shared_ptr<OceanModel> model = createCubeModel(FirstApp::oceanDevice, glm::vec3{0.0f, 0.0f, 0.0f});
+        auto cube = OceanGameObject::createGameObject();
+        cube.model = model;
+        cube.transform3d.translation = {0.0f, 0.0f, 0.5f};
+        cube.transform3d.scale = {0.5f, 0.5f, 0.5f};
 
-        gameObjects.push_back(std::move(triangle));
-        std::cout << "game objects loaded" << std::endl;
+        gameObjects.push_back(std::move(cube));
     }
 
     void FirstApp::run() {
-        std::cout << "run starts" << std::endl;
+        // std::cout << "run starts" << std::endl;
         OceanRenderSystem renderSystem{ oceanDevice, oceanRenderer.getSwapChainRenderPass() } ;
-        std::cout << "render system created" << std::endl;
+        // std::cout << "render system created" << std::endl;
         while(!oceanWindow.shouldClose()) {
             glfwPollEvents();
             //the begin fram function will return a null function if the swap chain need to be recreated

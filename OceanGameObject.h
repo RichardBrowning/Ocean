@@ -3,16 +3,18 @@
 #include <memory>
 
 namespace ocean{
-    struct Transform2dComponent {
-        glm::vec2 translation {};
-        glm::vec2 scale {1.f, 1.f};
-        float rotation;
-        glm::mat2 mat2() {
-            const float sin = std::sin(rotation);
-            const float cos = std::cos(rotation);
-            glm::mat2 rotMat {{cos, -sin}, {sin, cos}};
-            glm::mat2 scaleMat {{scale.x, 0.f}, {0.f, scale.y}};
-            return rotMat * scaleMat;
+    struct TransformComponent {
+        glm::vec3 translation {};
+        glm::vec3 scale {1.f, 1.f, 1.f};
+        glm::vec3 rotation {};
+        glm::mat4 mat4() {
+            auto transform = glm::translate(glm::mat4{1.f}, translation);
+            transform = glm::rotate(transform, rotation.y, {0.f, 1.f, 0.f});
+            transform = glm::rotate(transform, rotation.x, {1.f, 0.f, 0.f});
+            transform = glm::rotate(transform, rotation.z, {0.f, 0.f, 1.f});
+            transform = glm::scale(transform, scale);
+
+            return transform;
         }
     };
 
@@ -33,7 +35,7 @@ namespace ocean{
         
         std::shared_ptr<OceanModel> model{};
         glm::vec3 color{};
-        Transform2dComponent transform2d{};
+        TransformComponent transform3d{};
 
     private:
         OceanGameObject(id_t id) : id{id} {}

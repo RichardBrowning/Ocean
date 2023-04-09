@@ -57,7 +57,7 @@ namespace ocean {
         std::vector<VkVertexInputAttributeDescription> inputAttributeDescription(2);
         inputAttributeDescription[0].binding = 0;
         inputAttributeDescription[0].location = 0;
-        inputAttributeDescription[0].format = VK_FORMAT_R32G32_SFLOAT;
+        inputAttributeDescription[0].format = VK_FORMAT_R32G32B32_SFLOAT;
         inputAttributeDescription[0].offset = offsetof(Vertex, position);
 
         inputAttributeDescription[1].binding = 0;

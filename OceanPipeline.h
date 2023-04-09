@@ -11,6 +11,8 @@ namespace ocean {
 
         //VkViewport viewport;
         //VkRect2D scissor;
+        std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
         VkPipelineViewportStateCreateInfo viewportInfo; //avoid pviewport become null pointer when copied
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo; //
         VkPipelineRasterizationStateCreateInfo rasterizerInfo; //
