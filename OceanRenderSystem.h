@@ -23,7 +23,7 @@ namespace ocean {
 
         OceanDevice &oceanDevice;
 
-        std::unique_ptr<OceanPipeline> oceanPipeline;
+        std::unique_ptr<OceanPipeline> oceanPipeline;//{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT))}
         VkPipelineLayout pipelineLayout;
     };
 }
