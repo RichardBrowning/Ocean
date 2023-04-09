@@ -2,28 +2,25 @@
 #include "OceanDevice.h"
 #include "OceanPipeline.h"
 #include "OceanGameObject.h"
-#include "OceanPerspectiveCamera.h"
+#include "PerspectiveCamera.h"
 #include <memory>
 #include <vector>
 
 namespace ocean {
     class OceanRenderSystem {
         public:
-        OceanRenderSystem(OceanDevice &device, VkRenderPass renderPass);
-        ~OceanRenderSystem();
-
-        OceanRenderSystem(const OceanRenderSystem &) = delete;
-        OceanRenderSystem &operator=(const OceanRenderSystem &) = delete;
-
-        void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects, const OceanPerspectiveCamera &camera);
-
+            OceanRenderSystem(OceanDevice &device, VkRenderPass renderPass);
+            ~OceanRenderSystem();
+            //delete copy constructor and copy assignment operator
+            OceanRenderSystem(const OceanRenderSystem&) = delete;
+            OceanRenderSystem& operator = (const OceanRenderSystem&) = delete;
+            void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects, const PerspectiveCamera &camera);
         private:
-        void createPipelineLayout();
-        void createPipeline(VkRenderPass renderPass);
+            OceanDevice &oceanDevice;
+            VkPipelineLayout pipelineLayout;
+            std::unique_ptr<OceanPipeline> oceanPipeline; //{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)};
 
-        OceanDevice &oceanDevice;
-
-        std::unique_ptr<OceanPipeline> oceanPipeline;//{device, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", OceanPipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT))}
-        VkPipelineLayout pipelineLayout;
+            void createPipelineLayout();
+            void createPipeline(VkRenderPass renderPass);
     };
 }

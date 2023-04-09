@@ -9,42 +9,44 @@
 namespace ocean {
     class OceanRenderer {
         public:
-        OceanRenderer(OceanWindow &window, OceanDevice &device);
-        ~OceanRenderer();
+            OceanRenderer(OceanWindow &window, OceanDevice &device);
+            ~OceanRenderer();
 
-        OceanRenderer(const OceanRenderer &) = delete;
-        OceanRenderer &operator=(const OceanRenderer &) = delete;
+            //delete copy constructor and copy assignment operator
+            OceanRenderer(const OceanRenderer&) = delete;
+            OceanRenderer& operator = (const OceanRenderer&) = delete;
+            
+            //begin frame
+            VkCommandBuffer beginFrame();
+            //end frame
+            void endFrame();
 
-        VkRenderPass getSwapChainRenderPass() const { return oceanSwapChain->getRenderPass(); }
-        bool isFrameInProgress() const { return isFrameStarted; }
-        float getAspectRatio() const {return oceanSwapChain->extentAspectRatio();}
-        VkCommandBuffer getCurrentCommandBuffer() const {
-            assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
-            return commandBuffers[currentFrameIndex];
-        }
+            VkRenderPass getSwapChainRenderPass() const { return oceanSwapChain->getRenderPass(); }
+            bool isFrameInProgress() const { return isFrameStarted; }
 
-        int getFrameIndex() const {
-            assert(isFrameStarted && "Cannot get frame index when frame not in progress");
-            return currentFrameIndex;
-        }
+            VkCommandBuffer getCurrentCommandBuffer() const { 
+                assert(isFrameStarted && "Frame is not started, cannot get command buffer!");
+                return commandBuffers[currentFrameIndex]; }
 
-        VkCommandBuffer beginFrame();
-        void endFrame();
-        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-        void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
-
+            void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
+            void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
+            int getFrameIndex() const {
+                assert(isFrameStarted && "Cannot get command buffer when frame not in progress.");
+                return currentFrameIndex;
+            }
+            float getAspectRatio() const { return oceanSwapChain->extentAspectRatio(); }
         private:
-        void createCommandBuffers();
-        void freeCommandBuffers();
-        void recreateSwapChain();
+            uint32_t currentImageIndex;
+            int currentFrameIndex{0};
+            bool isFrameStarted{false};
+            OceanWindow &oceanWindow;
+            OceanDevice &oceanDevice;
+            std::unique_ptr<OceanSwapChain> oceanSwapChain;
+            std::vector<VkCommandBuffer> commandBuffers;
 
-        OceanWindow &oceanWindow;
-        OceanDevice &oceanDevice;
-        std::unique_ptr<OceanSwapChain> oceanSwapChain;
-        std::vector<VkCommandBuffer> commandBuffers;
+            void createCommandBuffers();
+            void freeCommandBuffers();
+            void recreateSwapChain();
 
-        uint32_t currentImageIndex;
-        int currentFrameIndex;
-        bool isFrameStarted;
     };
 }
