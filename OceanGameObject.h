@@ -16,9 +16,8 @@ namespace ocean{
 
         //     return transform;
         // }
-        // Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
-        // Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
-        // https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
+        // matrix corrsponds to translate * rx * ry * rz * scale transformation
+        // rotation conversion using tait-bryan angles with axis order Y(1), X(2), Z(3)
         glm::mat4 mat4() {
             const float c3 = glm::cos(rotation.z);
             const float s3 = glm::sin(rotation.z);
@@ -71,6 +70,5 @@ namespace ocean{
     private:
         OceanGameObject(id_t id) : id{id} {}
         id_t id;
-
     };
 }

@@ -24,6 +24,10 @@ namespace ocean {
             OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
             OceanDevice oceanDevice{oceanWindow};
             OceanRenderer oceanRenderer{oceanWindow, oceanDevice};
+            //oceanSwapchain
+            //oceanPipeline
+            //pipelineLayout
+            //commandBuffers
             std::vector<OceanGameObject> gameObjects;
             
             void loadGameObjects();
