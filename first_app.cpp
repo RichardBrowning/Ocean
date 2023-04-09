@@ -76,11 +76,11 @@ namespace ocean {
     }
 
     void FirstApp::loadGameObjects(){
-        std::shared_ptr<OceanModel> model = createCubeModel(FirstApp::oceanDevice, glm::vec3{0.0f, 0.0f, 0.0f});
+        std::shared_ptr<OceanModel> model = createCubeModel(FirstApp::oceanDevice, glm::vec3{.0f, .0f, .0f});
         auto cube = OceanGameObject::createGameObject();
         cube.model = model;
-        cube.transform3d.translation = {0.0f, 0.0f, 0.5f};
-        cube.transform3d.scale = {0.5f, 0.5f, 0.5f};
+        cube.transform3d.translation = {.0f, .0f, .0f};
+        cube.transform3d.scale = {.5f, .5f, .5f};
 
         gameObjects.push_back(std::move(cube));
     }
