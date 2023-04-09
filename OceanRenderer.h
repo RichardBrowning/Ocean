@@ -34,6 +34,7 @@ namespace ocean {
                 assert(isFrameStarted && "Cannot get command buffer when frame not in progress.");
                 return currentFrameIndex;
             }
+            float getAspectRatio() const { return oceanSwapChain->extentAspectRatio(); }
         private:
             uint32_t currentImageIndex;
             int currentFrameIndex{0};
