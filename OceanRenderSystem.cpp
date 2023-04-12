@@ -62,8 +62,8 @@ namespace ocean {
         auto projectView = camera.getProjection() * camera.getView();
         for (auto& gameObject : gameObjects)
         {
-            gameObject.transform3d.rotation.y = glm::mod(gameObject.transform3d.rotation.y + 0.01f, glm::two_pi<float>());
-            gameObject.transform3d.rotation.x = glm::mod(gameObject.transform3d.rotation.x + 0.005f, glm::two_pi<float>());
+            // gameObject.transform3d.rotation.y = glm::mod(gameObject.transform3d.rotation.y + 0.01f, glm::two_pi<float>());
+            // gameObject.transform3d.rotation.x = glm::mod(gameObject.transform3d.rotation.x + 0.005f, glm::two_pi<float>());
             SimplePushConstantData push{};
             push.color = gameObject.color;
             push.transform = projectView * gameObject.transform3d.mat4();

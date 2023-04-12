@@ -1,5 +1,7 @@
 #include "first_app.h"
 #include "OceanRenderSystem.h"
+#include "KeyboardListener.h"
+#include "PerspectiveCamera.h"
 #define GLM_FORRCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -7,6 +9,7 @@
 #include <stdexcept>
 #include <cassert>
 #include <array>
+#include <chrono>
 // #include <iostream>
 
 namespace ocean {
@@ -79,7 +82,7 @@ namespace ocean {
         std::shared_ptr<OceanModel> model = createCubeModel(FirstApp::oceanDevice, glm::vec3{.0f, .0f, .0f});
         auto cube = OceanGameObject::createGameObject();
         cube.model = model;
-        cube.transform3d.translation = {.0f, .0f, .0f};
+        cube.transform3d.translation = {.0f, .0f, 2.5f};
         cube.transform3d.scale = {.5f, .5f, .5f};
 
         gameObjects.push_back(std::move(cube));
@@ -89,10 +92,22 @@ namespace ocean {
         // std::cout << "run starts" << std::endl;
         OceanRenderSystem renderSystem{ oceanDevice, oceanRenderer.getSwapChainRenderPass() } ;
         PerspectiveCamera camera{};
-        camera.setViewDirection(glm::vec3(-2.f, -2.f, -1.f), glm::vec3(1.f, 1.f, .5f)); //LESSON: this is in YXZ
+        // camera.setViewDirection(glm::vec3(-2.f, -2.f, -1.f), glm::vec3(1.f, 1.f, .5f)); //LESSON: this is in YXZ
         // std::cout << "render system created" << std::endl;
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto viewerObject = OceanGameObject::createGameObject();
+        KeyboardListener keyboardListener{};
         while(!oceanWindow.shouldClose()) {
             glfwPollEvents();
+            auto newTime = std::chrono::high_resolution_clock::now();
+            //float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(newTime - currentTime).count();
+            float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            currentTime = newTime;
+
+            //keyboard controller
+            keyboardListener.moveInPlaneXZ(oceanWindow.getWindow(), deltaTime, viewerObject); 
+            camera.setViewYXZ(viewerObject.transform3d.translation, viewerObject.transform3d.rotation);
+
             float aspect = oceanRenderer.getAspectRatio();
             camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 100.f);//always update with window size, left & right = aspect
             //the begin fram function will return a null function if the swap chain need to be recreated
