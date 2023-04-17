@@ -22,7 +22,9 @@ namespace ocean {
         indexCount = static_cast<uint32_t>(indices.size());
         if(indexCount != 0)
             hasIndexBuffer = true;
-        
+        else
+            hasIndexBuffer = false;
+            return;
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
         oceanDevice.createBuffer(
             bufferSize,
