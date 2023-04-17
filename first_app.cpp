@@ -76,7 +76,7 @@ namespace ocean {
         for (auto& v : modelBuilder.vertices) {
             v.position += offset;
         }
-        return std::make_unique<OceanModel>(device, modelBuilder.vertices);
+        return std::make_unique<OceanModel>(device, modelBuilder);
     }
 
     void FirstApp::loadGameObjects(){

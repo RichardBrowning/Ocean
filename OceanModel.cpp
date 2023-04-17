@@ -3,7 +3,7 @@
 #include <cstring>
 
 namespace ocean {
-    OceanModel::OceanModel(OceanDevice &device, const Builder &builder) : oceanDevice{device} //initialize "device" member variable
+    OceanModel::OceanModel(OceanDevice &device, const OceanModel::Builder &builder) : oceanDevice{device} //initialize "device" member variable
     {
         createVertexBuffer(builder.vertices);
         createIndexBuffer(builder.indices);
