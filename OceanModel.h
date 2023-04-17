@@ -16,6 +16,8 @@ namespace ocean
         {
             glm::vec3 position{};
             glm::vec3 color{};
+            glm::vec3 normal{};
+            glm::vec2 uv{};
 
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
@@ -24,6 +26,7 @@ namespace ocean
         struct Builder{
             std::vector<Vertex> vertices{};
             std::vector<uint32_t> indices{};
+            void loadModel(const std::string &filePath);
         };
         
         OceanModel(OceanDevice &device, const Builder &builder);
@@ -34,6 +37,7 @@ namespace ocean
 
         void bind(VkCommandBuffer commandBuffer);
         void draw(VkCommandBuffer commandBuffer);
+        static std::unique_ptr<OceanModel> createModel(OceanDevice& device, const std::string &filePath);
     private:
         void createVertexBuffer(const std::vector<Vertex> &vertices);
         void createIndexBuffer(const std::vector<uint32_t> &indices);

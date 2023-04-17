@@ -108,6 +108,15 @@ namespace ocean {
             vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
     }
 
+    std::unique_ptr<OceanModel> OceanModel::createModel(OceanDevice &device, const std::string &filePath)
+    {
+        Builder builder;
+        builder.loadModel(filePath);
+        //std::cout << "Vertex count: " << builder.vertices.size() << std::endl;
+        //std::cout << "Index count: " << builder.indices.size() << std::endl;
+        return std::make_unique<OceanModel>(device, builder);
+    }
+
     std::vector<VkVertexInputBindingDescription> OceanModel::Vertex::getBindingDescriptions()
     {
         std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
@@ -130,5 +139,58 @@ namespace ocean {
         inputAttributeDescription[1].format = VK_FORMAT_R32G32B32_SFLOAT;
         inputAttributeDescription[1].offset = offsetof(Vertex, color);//calculates the offset from the first element of the structure to the color element
         return inputAttributeDescription;
+    }
+
+    void OceanModel::Builder::loadModel(const std::string &filePath)
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filePath.c_str()))
+            throw std::runtime_error(warn + err);
+
+        vertices.clear();
+        indices.clear();
+
+        for (const auto &shape : shapes)
+        {
+            for (const auto &index : shape.mesh.indices)//loop through all elements of the mesh, return the value of the index
+            {
+                //init a vertex
+                Vertex vertex = {};
+                if (index.vertex_index >= 0){//vertex_index is the first value of the face element: what position value to use, if -1, not provided
+                    vertex.position = {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]};
+                    auto colorIndex = 3 * index.vertex_index + 2;
+                    if (colorIndex < attrib.colors.size()){
+                        vertex.color = {
+                            attrib.colors[colorIndex - 2],
+                            attrib.colors[colorIndex - 1],
+                            attrib.colors[colorIndex]};
+                    }else
+                        vertex.color = {1.0f, 1.0f, 1.0f};
+                }
+
+                if (index.normal_index >= 0)
+                {
+                    vertex.normal = {
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]};
+                }
+                if (index.texcoord_index >= 0)
+                {
+                    vertex.uv = {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        attrib.texcoords[2 * index.texcoord_index + 1]};
+                }
+
+                vertices.push_back(vertex);
+            }
+        }
     }
 }
