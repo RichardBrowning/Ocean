@@ -3,17 +3,38 @@
 #include <cstring>
 
 namespace ocean {
-    OceanModel::OceanModel(OceanDevice &device, const std::vector<Vertex> &vertices) : oceanDevice{device} //initialize "device" member variable
+    OceanModel::OceanModel(OceanDevice &device, const Builder &builder) : oceanDevice{device} //initialize "device" member variable
     {
-        createVertexBuffer(vertices);
+        createVertexBuffer(builder.vertices);
+        createIndexBuffer(builder.indices);
     }
 
     OceanModel::~OceanModel()
     {
         vkDestroyBuffer(oceanDevice.device(), vertexBuffer, nullptr);
         vkFreeMemory(oceanDevice.device(), vertexBufferMemory, nullptr);
+        if (hasIndexBuffer){
+            vkDestroyBuffer(oceanDevice.device(), indexBuffer, nullptr);
+            vkFreeMemory(oceanDevice.device(), indexBufferMemory, nullptr);
+        }
     }
-
+    void OceanModel::createIndexBuffer(const std::vector<uint32_t> &indices){
+        indexCount = static_cast<uint32_t>(indices.size());
+        if(indexCount != 0)
+            hasIndexBuffer = true;
+        
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+        oceanDevice.createBuffer(
+            bufferSize,
+            VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            indexBuffer,
+            indexBufferMemory);
+        void *data;
+        vkMapMemory(oceanDevice.device(), indexBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
+        vkUnmapMemory(oceanDevice.device(), indexBufferMemory);
+    }
     void OceanModel::createVertexBuffer(const std::vector<Vertex> &vertices){
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
@@ -27,20 +48,24 @@ namespace ocean {
 
         void *data;
         vkMapMemory(oceanDevice.device(), vertexBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), (size_t)bufferSize);
+        memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
         vkUnmapMemory(oceanDevice.device(), vertexBufferMemory);
     }
-
 
     void OceanModel::bind(VkCommandBuffer commandBuffer)
     {
         VkBuffer vertexBuffers[] = {vertexBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+        if (hasIndexBuffer)
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
     void OceanModel::draw(VkCommandBuffer commandBuffer)
     {
-        vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+        if (hasIndexBuffer)
+            vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+        else
+            vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
     }
 
     std::vector<VkVertexInputBindingDescription> OceanModel::Vertex::getBindingDescriptions()

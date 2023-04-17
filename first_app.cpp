@@ -21,7 +21,8 @@ namespace ocean {
     FirstApp::~FirstApp(){}
 
     std::unique_ptr<OceanModel> createCubeModel(OceanDevice& device, glm::vec3 offset) {
-        std::vector<OceanModel::Vertex> vertices{
+        OceanModel::Builder modelBuilder{};
+        modelBuilder.vertices = {
         
             // left face (white)
             {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
@@ -72,10 +73,10 @@ namespace ocean {
             {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
         
         };
-        for (auto& v : vertices) {
+        for (auto& v : modelBuilder.vertices) {
             v.position += offset;
         }
-        return std::make_unique<OceanModel>(device, vertices);
+        return std::make_unique<OceanModel>(device, modelBuilder.vertices);
     }
 
     void FirstApp::loadGameObjects(){

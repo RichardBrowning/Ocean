@@ -20,8 +20,13 @@ namespace ocean
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
         };
+
+        struct Builder{
+            std::vector<Vertex> vertices{};
+            std::vector<uint32_t> indices{};
+        };
         
-        OceanModel(OceanDevice &device, const std::vector<Vertex> &vertices);
+        OceanModel(OceanDevice &device, const Builder &builder);
         ~OceanModel();
     
         OceanModel(const OceanModel&) = delete;
@@ -31,10 +36,15 @@ namespace ocean
         void draw(VkCommandBuffer commandBuffer);
     private:
         void createVertexBuffer(const std::vector<Vertex> &vertices);
+        void createIndexBuffer(const std::vector<uint32_t> &indices);
         OceanDevice &oceanDevice; //reference to the device
         VkBuffer vertexBuffer;
         VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
+        VkBuffer indexBuffer;
+        VkDeviceMemory indexBufferMemory;
+        uint32_t indexCount;
+        bool hasIndexBuffer{false};
     };
     
 } // namespace ocean
