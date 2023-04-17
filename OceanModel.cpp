@@ -2,6 +2,9 @@
 #include <cassert>
 #include <cstring>
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+
 namespace ocean {
     OceanModel::OceanModel(OceanDevice &device, const OceanModel::Builder &builder) : oceanDevice{device} //initialize "device" member variable
     {
