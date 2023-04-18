@@ -1,9 +1,23 @@
 #include "OceanModel.h"
+#include "OceanHashCombine.h"
 #include <cassert>
 #include <cstring>
+#include <iostream>
+#include <unordered_map>
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+
+namespace std{
+    template <>
+    struct hash<ocean::OceanModel::Vertex>{
+        size_t operator()(ocean::OceanModel::Vertex const& vertex) const{
+            size_t seed = 0;
+            ocean::hasCombine(seed, vertex.position, vertex.normal, vertex.color, vertex.uv);
+            return seed;
+        }
+    };
+}
 
 namespace ocean {
     OceanModel::OceanModel(OceanDevice &device, const OceanModel::Builder &builder) : oceanDevice{device} //initialize "device" member variable
@@ -153,7 +167,7 @@ namespace ocean {
 
         vertices.clear();
         indices.clear();
-
+        std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
         for (const auto &shape : shapes)
         {
             for (const auto &index : shape.mesh.indices)//loop through all elements of the mesh, return the value of the index
@@ -189,7 +203,11 @@ namespace ocean {
                         attrib.texcoords[2 * index.texcoord_index + 1]};
                 }
 
-                vertices.push_back(vertex);
+                if (uniqueVertices.count(vertex) == 0)//if vertex is new, add to the map
+                {
+                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+                    vertices.push_back(vertex);
+                }
             }
         }
     }

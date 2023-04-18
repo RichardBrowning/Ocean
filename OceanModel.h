@@ -21,6 +21,9 @@ namespace ocean
 
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+            bool operator==(const Vertex &vertex) const{
+                return position == vertex.position && color == vertex.color && normal == vertex.normal && uv == vertex.uv;
+            }
         };
 
         struct Builder{
