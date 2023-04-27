@@ -1,11 +1,11 @@
 #pragma once
 #include "OceanDevice.h"
-
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <memory>
 
 namespace ocean
 {
@@ -21,8 +21,9 @@ namespace ocean
 
             static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
             static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+
             bool operator==(const Vertex &vertex) const{
-                return position == vertex.position && color == vertex.color && normal == vertex.normal && uv == vertex.uv;
+                return (position == vertex.position && color == vertex.color && normal == vertex.normal && uv == vertex.uv);
             }
         };
 

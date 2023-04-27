@@ -7,23 +7,23 @@
 #include <vector>
 
 namespace ocean {
-    class FirstApp {
+    class App {
         public:
             static constexpr int WIDTH = 800;
             static constexpr int HEIGHT = 600;
             const std::string NAME = "First App";
-            FirstApp();
-            ~FirstApp();
+            App();
+            ~App();
 
             //delete copy constructor and copy assignment operator
-            FirstApp(const FirstApp&) = delete;
-            FirstApp& operator = (const FirstApp&) = delete;
+            App(const App&) = delete;
+            App& operator = (const App&) = delete;
 
             void run();
         private:
-            OceanWindow oceanWindow{WIDTH, HEIGHT, NAME};
-            OceanDevice oceanDevice{oceanWindow};
-            OceanRenderer oceanRenderer{oceanWindow, oceanDevice};
+            OceanWindow oceanWindow = OceanWindow(WIDTH, HEIGHT, NAME);
+            OceanDevice oceanDevice = OceanDevice(oceanWindow);
+            OceanRenderer oceanRenderer = OceanRenderer(oceanWindow, oceanDevice);
             //oceanSwapchain
             //oceanPipeline
             //pipelineLayout

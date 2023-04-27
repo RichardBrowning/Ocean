@@ -1,4 +1,4 @@
-#include "first_app.h"
+#include "App.h"
 #include "OceanRenderSystem.h"
 #include "KeyboardListener.h"
 #include "PerspectiveCamera.h"
@@ -10,15 +10,15 @@
 #include <cassert>
 #include <array>
 #include <chrono>
-// #include <iostream>
 
 namespace ocean {
-    FirstApp::FirstApp()
+    App::App()
     {
         // std::cout << "first cpp starts" << std::endl;
         loadGameObjects();
     }
-    FirstApp::~FirstApp(){}
+
+    App::~App(){}
 
     std::unique_ptr<OceanModel> createCubeModel(OceanDevice& device, glm::vec3 offset) {
         OceanModel::Builder modelBuilder{};
@@ -69,34 +69,37 @@ namespace ocean {
         return std::make_unique<OceanModel>(device, modelBuilder);
     }
 
-    void FirstApp::loadGameObjects(){
+    void App::loadGameObjects(){
         std::shared_ptr<OceanModel> model = OceanModel::createModel(oceanDevice, "models/smooth_vase.obj");
-        auto cube = OceanGameObject::createGameObject();
-        cube.model = model;
-        cube.transform3d.translation = {.0f, .0f, 2.5f};
-        cube.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
+        auto gameObject = OceanGameObject::createGameObject();
+        gameObject.model = model;
+        gameObject.transform3d.translation = {.0f, .0f, 2.5f};
+        gameObject.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
 
-        gameObjects.push_back(std::move(cube));
+        gameObjects.push_back(std::move(gameObject));
     }
 
-    void FirstApp::run() {
+    void App::run() {
         // std::cout << "run starts" << std::endl;
         OceanRenderSystem renderSystem{ oceanDevice, oceanRenderer.getSwapChainRenderPass() } ;
         PerspectiveCamera camera{};
         // camera.setViewDirection(glm::vec3(-2.f, -2.f, -1.f), glm::vec3(1.f, 1.f, .5f)); //LESSON: this is in YXZ
         // std::cout << "render system created" << std::endl;
-        auto currentTime = std::chrono::high_resolution_clock::now();
+        // create time stamp
+        auto time = std::chrono::high_resolution_clock::now();
         auto viewerObject = OceanGameObject::createGameObject();
         KeyboardListener keyboardListener{};
         while(!oceanWindow.shouldClose()) {
+            //
             glfwPollEvents();
+            
             auto newTime = std::chrono::high_resolution_clock::now();
-            //float deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(newTime - currentTime).count();
-            float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
-            currentTime = newTime;
+            //float delta = std::chrono::duration_cast<std::chrono::microseconds>(newTime - currentTime).count();
+            float delta = std::chrono::duration<float, std::chrono::seconds::period>(newTime - time).count();
+            time = newTime;
 
             //keyboard controller
-            keyboardListener.moveInPlaneXZ(oceanWindow.getWindow(), deltaTime, viewerObject); 
+            keyboardListener.moveInPlaneXZ(oceanWindow.getWindow(), delta, viewerObject); 
             camera.setViewYXZ(viewerObject.transform3d.translation, viewerObject.transform3d.rotation);
 
             float aspect = oceanRenderer.getAspectRatio();
