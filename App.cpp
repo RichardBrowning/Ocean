@@ -70,13 +70,20 @@ namespace ocean {
     }
 
     void App::loadGameObjects(){
-        std::shared_ptr<OceanModel> model = OceanModel::createModel(oceanDevice, "models/smooth_vase.obj");
-        auto gameObject = OceanGameObject::createGameObject();
-        gameObject.model = model;
-        gameObject.transform3d.translation = {.0f, .0f, 2.5f};
-        gameObject.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
+        std::shared_ptr<OceanModel> smoothVase = OceanModel::createModel(oceanDevice, "models/smooth_vase.obj");
+        std::shared_ptr<OceanModel> flatModel = OceanModel::createModel(oceanDevice, "models/flat_vase.obj");
+        
+        auto gameObjectFlat = OceanGameObject::createGameObject();
+        auto gameObjectSmooth = OceanGameObject::createGameObject();
+        gameObjectFlat.model = flatModel;
+        gameObjectSmooth.model = smoothVase;
+        gameObjectFlat.transform3d.translation = {.0f, .0f, -2.5f};
+        gameObjectSmooth.transform3d.translation = {.0f, .0f, 2.5f};
+        gameObjectFlat.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
+        gameObjectSmooth.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
 
-        gameObjects.push_back(std::move(gameObject));
+        gameObjects.push_back(std::move(gameObjectFlat));
+        gameObjects.push_back(std::move(gameObjectSmooth));
     }
 
     void App::run() {

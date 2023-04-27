@@ -135,16 +135,24 @@ namespace ocean {
 
     std::vector<VkVertexInputAttributeDescription> OceanModel::Vertex::getAttributeDescriptions()
     {
-        std::vector<VkVertexInputAttributeDescription> inputAttributeDescription(2);
-        inputAttributeDescription[0].binding = 0;
-        inputAttributeDescription[0].location = 0;
-        inputAttributeDescription[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-        inputAttributeDescription[0].offset = offsetof(Vertex, position);
+        // std::vector<VkVertexInputAttributeDescription> inputAttributeDescription(2);
+        // inputAttributeDescription[0].binding = 0;
+        // inputAttributeDescription[0].location = 0;
+        // inputAttributeDescription[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        // inputAttributeDescription[0].offset = offsetof(Vertex, position);
 
-        inputAttributeDescription[1].binding = 0;
-        inputAttributeDescription[1].location = 1;
-        inputAttributeDescription[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-        inputAttributeDescription[1].offset = offsetof(Vertex, color);//calculates the offset from the first element of the structure to the color element
+        // inputAttributeDescription[1].binding = 0;
+        // inputAttributeDescription[1].location = 1;
+        // inputAttributeDescription[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        // inputAttributeDescription[1].offset = offsetof(Vertex, color);//calculates the offset from the first element of the structure to the color element
+        
+        std::vector<VkVertexInputAttributeDescription> inputAttributeDescription{};
+
+        inputAttributeDescription.push_back({0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)});
+        inputAttributeDescription.push_back({1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)});
+        inputAttributeDescription.push_back({2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)});
+        inputAttributeDescription.push_back({3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)});
+
         return inputAttributeDescription;
     }
 
@@ -182,14 +190,19 @@ namespace ocean {
                         attrib.vertices[3 * index.vertex_index + 2]
                     };
 
-                    auto colorIndex = 3 * index.vertex_index + 2;
-                    if (colorIndex < attrib.colors.size()){
-                        vertex.color = {
-                            attrib.colors[colorIndex - 2],
-                            attrib.colors[colorIndex - 1],
-                            attrib.colors[colorIndex]};
-                    }else
-                        vertex.color = {1.0f, 1.0f, 1.0f};
+                    vertex.color = {
+                        attrib.colors[3 * index.vertex_index],
+                        attrib.colors[3 * index.vertex_index + 1],
+                        attrib.colors[3 * index.vertex_index + 2]
+                    };
+                    // auto colorIndex = 3 * index.vertex_index + 2;
+                    // if (colorIndex < attrib.colors.size()){
+                    //     vertex.color = {
+                    //         attrib.colors[colorIndex - 2],
+                    //         attrib.colors[colorIndex - 1],
+                    //         attrib.colors[colorIndex]};
+                    // }else
+                    //     vertex.color = {1.0f, 1.0f, 1.0f};
                 }
 
                 if (index.normal_index >= 0)
