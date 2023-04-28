@@ -15,9 +15,8 @@ const float fogGradient = 2.0;
 void main(){
     float distance = length(gl_FragCoord.xyz);
     
-    //float fogAmount = 1.0 - exp(-pow((distance * fogDensity), fogGradient));
-    //float fogFactor = exp(-0.02 * gl_FragCoord.z); // calculate the fog factor based on the depth of the fragment
-    //outColor = mix(vec4( fragColor, 0.0 ), vec4( push.color, 0.0 ), fogFactor); // mix the fragment color with the color of the fog based on the fog factor
-    outColor = vec4( fragColor* (10/distance), 1.0 );
-    //outColor = vec4( fragColor, 1.0 );
+    // float fogAmount = 1.0 - exp(-pow((distance * fogDensity), fogGradient));
+    // float fogFactor = exp(-0.02 * gl_FragCoord.z); // calculate the fog factor based on the depth of the fragment
+    // outColor = vec4( fragColor* (20/distance), 1.0 );
+    outColor = vec4( fragColor, 1.0 );
 }
