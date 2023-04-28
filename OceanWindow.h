@@ -22,6 +22,7 @@ namespace ocean {
             //dont want to have a dangling pointer when the copy is destructed
             OceanWindow(const OceanWindow&) = delete;
             OceanWindow& operator=(const OceanWindow&) = delete;
+            
             GLFWwindow* getWindow() { return window; }
             bool shouldClose() { return glfwWindowShouldClose(window); };
             VkExtent2D getExtent() {return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};}

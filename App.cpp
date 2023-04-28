@@ -18,7 +18,18 @@ namespace ocean {
         loadGameObjects();
     }
 
-    App::~App(){}
+    App::~App(){
+        ;
+    }
+
+    std::string App::getName()
+    {
+        return NAME;
+    }
+    glm::vec2 App::getSize()
+    {
+        return glm::vec2{WIDTH, HEIGHT};
+    }
 
     std::unique_ptr<OceanModel> createCubeModel(OceanDevice& device, glm::vec3 offset) {
         OceanModel::Builder modelBuilder{};
@@ -69,7 +80,18 @@ namespace ocean {
         return std::make_unique<OceanModel>(device, modelBuilder);
     }
 
+    OceanGameObject App::singleGameObject(std::string filePath, glm::vec3 trainslation, glm::vec3 scale){
+        std::shared_ptr<OceanModel> model = OceanModel::createModel(oceanDevice, filePath);
+        auto gameObject = OceanGameObject::createGameObject();
+        gameObject.model = model;
+        gameObject.transform3d.translation = trainslation;
+        gameObject.transform3d.scale = scale;//{.5f, .5f, .5f};
+
+        return gameObject;
+    }
     void App::loadGameObjects(){
+        std::vector<GameObjectArray> gameObjs = {{"models/smooth_vase.obj", glm::vec3(.0f, .5f, -1.5f), glm::vec3(3.f)}, {"models/flat_vase.obj", glm::vec3(3.5f, 1.99f, 3.5f), glm::vec3(2.f)}, {"models/tar.obj", glm::vec3(.0f, 2.0f, .0f), glm::vec3(.1f)}};
+        /*
         std::shared_ptr<OceanModel> smoothVase = OceanModel::createModel(oceanDevice, "models/smooth_vase.obj");
         std::shared_ptr<OceanModel> flatModel = OceanModel::createModel(oceanDevice, "models/flat_vase.obj");
         
@@ -81,9 +103,19 @@ namespace ocean {
         gameObjectSmooth.transform3d.translation = {.0f, .0f, 2.5f};
         gameObjectFlat.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
         gameObjectSmooth.transform3d.scale = glm::vec3(3.f);//{.5f, .5f, .5f};
-
+        
         gameObjects.push_back(std::move(gameObjectFlat));
         gameObjects.push_back(std::move(gameObjectSmooth));
+        */
+        for (auto& gameObj : gameObjs) {
+            std::shared_ptr<OceanModel> model = OceanModel::createModel(oceanDevice, gameObj.filePath);
+            auto gameObject = OceanGameObject::createGameObject();
+            gameObject.model = model;
+            gameObject.transform3d.translation = gameObj.translation;
+            gameObject.transform3d.scale = gameObj.scale;//{.5f, .5f, .5f};
+
+            gameObjects.push_back(std::move(gameObject));
+        }
     }
 
     void App::run() {
