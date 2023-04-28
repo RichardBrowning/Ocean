@@ -5,22 +5,26 @@
 #include "OceanGameObject.h"
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace ocean {
     class App {
         public:
-            static constexpr int WIDTH = 800;
-            static constexpr int HEIGHT = 600;
-            const std::string NAME = "First App";
             App();
             ~App();
-
-            //delete copy constructor and copy assignment operator
-            App(const App&) = delete;
-            App& operator = (const App&) = delete;
-
+            glm::vec2 getSize();
+            std::string getName();
             void run();
+            struct GameObjectArray {
+                std::string filePath;
+                glm::vec3 translation;
+                glm::vec3 scale;
+            };
         private:
+            const uint32_t WIDTH = 800;
+            const uint32_t HEIGHT = 600;
+            const std::string NAME = "Engine Demo";
+            
             OceanWindow oceanWindow = OceanWindow(WIDTH, HEIGHT, NAME);
             OceanDevice oceanDevice = OceanDevice(oceanWindow);
             OceanRenderer oceanRenderer = OceanRenderer(oceanWindow, oceanDevice);
@@ -29,7 +33,7 @@ namespace ocean {
             //pipelineLayout
             //commandBuffers
             std::vector<OceanGameObject> gameObjects;
-            
+            OceanGameObject singleGameObject(std::string filePath, glm::vec3 trainslation, glm::vec3 scale);
             void loadGameObjects();
     };
 }
