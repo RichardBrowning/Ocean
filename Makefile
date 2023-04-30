@@ -7,7 +7,7 @@
 # -I$(VULKAN_SDK)/include: add Vulkan SDK include path to include path
 # -I$(GLFW_PATH): add GLFW include path to include path
 
-# LDFLAGS：gcc 等编译器会用到的一些优化参数，也可以在里面指定库文件的位置
+# LDFLAGS：gcc and other compiler's optimization parameters and libraries paths
 # -L$(VULKAN_SDK)/lib: add Vulkan SDK lib path to library path
 # -lvulkan: link to Vulkan library
 
