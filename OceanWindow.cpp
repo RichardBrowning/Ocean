@@ -15,11 +15,13 @@ namespace ocean{
 
     void OceanWindow::initWindow()
     {
+        //glfw proces init
         glfwInit();
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        //hint set
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-        //LESSON: glfwCreateWindow() returns a pointer to a GLFWwindow object
+        //glfwCreateWindow() returns a pointer to a GLFWwindow object
         window = glfwCreateWindow(width, height, name.c_str(), nullptr, nullptr);
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);

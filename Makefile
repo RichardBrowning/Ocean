@@ -7,7 +7,7 @@
 # -I$(VULKAN_SDK)/include: add Vulkan SDK include path to include path
 # -I$(GLFW_PATH): add GLFW include path to include path
 
-# LDFLAGS：gcc and other compiler's optimization parameters and libraries paths
+# LDFLAGS：gcc compiler optimization parameters, and also library files when necessary
 # -L$(VULKAN_SDK)/lib: add Vulkan SDK lib path to library path
 # -lvulkan: link to Vulkan library
 

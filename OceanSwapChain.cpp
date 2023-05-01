@@ -1,3 +1,4 @@
+/** Copyright Brendan Galea */
 #include "OceanSwapChain.h"
 
 // std

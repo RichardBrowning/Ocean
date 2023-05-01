@@ -26,4 +26,4 @@ The initialization process contains the following mean components:
 9. Create the command pool
 10. Create the command buffers
 
-The window used here is the GLFW window object which is a OpenGL window but is the official default window interface for Vulkan. After creating the window, the GLFW windows instance was passed to the device constructor. The device class was composed by Branden Galea. It is reseponsible for creating the instance, as well as selecting optimal physical GPU and create logical device with it. The device class 
+The window used here is the GLFW window object which is a OpenGL window but is the official default window interface for Vulkan. After creating the window, the GLFW windows instance was passed to the device constructor. The device class was composed by Branden Galea. It is reseponsible for creating the instance, as well as selecting optimal physical GPU and create logical device with it. The device class also contains some helper functions for creating the swapchain, the renderpass, the graphics pipeline, and the command pool. The command buffers are created in the main loop. 

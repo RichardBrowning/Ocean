@@ -83,9 +83,8 @@ namespace ocean{
         else{
             std::shared_ptr<OceanSwapChain> oldSwapChain = std::move(OceanRenderer::oceanSwapChain);
             OceanRenderer::oceanSwapChain = std::make_unique<OceanSwapChain>(OceanRenderer::oceanDevice, extent, oldSwapChain);
-            if (!oldSwapChain->compareSwapchainFormats(*OceanRenderer::oceanSwapChain.get())){
+            if (!oldSwapChain->compareSwapchainFormats(*OceanRenderer::oceanSwapChain.get()))
                 throw std::runtime_error("Swapchain image or depth format has changed.");
-            }
             // if (OceanRenderer::oceanSwapChain -> imageCount() != OceanRenderer::commandBuffers.size()) {
             //     freeCommandBuffers();
             //     createCommandBuffers();

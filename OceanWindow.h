@@ -17,12 +17,12 @@ namespace ocean {
         public:
             OceanWindow(int width, int height, std::string name);
             ~OceanWindow();
-
-            //LESSON: delete copy constructor and copy assignment operator
+            //LESSON: may delete copy constructor and copy assignment operator
             //dont want to have a dangling pointer when the copy is destructed
             OceanWindow(const OceanWindow&) = delete;
             OceanWindow& operator=(const OceanWindow&) = delete;
-
+            
+            GLFWwindow* getWindow() { return window; }
             bool shouldClose() { return glfwWindowShouldClose(window); };
             VkExtent2D getExtent() {return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};}
             
