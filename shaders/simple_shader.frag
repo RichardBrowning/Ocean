@@ -17,6 +17,7 @@ void main(){
     
     // float fogAmount = 1.0 - exp(-pow((distance * fogDensity), fogGradient));
     // float fogFactor = exp(-0.02 * gl_FragCoord.z); // calculate the fog factor based on the depth of the fragment
-    outColor = vec4( fragColor* (20/distance), 1.0 );
+    outColor = vec4( fragColor, 1.0 );
+    // enable this line to get dark effect (closer object appears darker)
     // outColor = vec4( fragColor*(20/distance), 1.0 );
 }
