@@ -42,7 +42,12 @@ namespace ocean {
         return gameObject;
     }
     void App::loadGameObjects(){
-        std::vector<GameObjectArray> gameObjs = {{"models/smooth_vase.obj", glm::vec3(.0f, .5f, -1.5f), glm::vec3(3.f)}, {"models/flat_vase.obj", glm::vec3(3.5f, 1.99f, 3.5f), glm::vec3(2.f)}, {"models/tar.obj", glm::vec3(.0f, 2.0f, .0f), glm::vec3(.1f)}};
+        std::vector<GameObjectArray> gameObjs = {
+            {"models/smooth_vase.obj", glm::vec3(.0f, .5f, -1.5f), glm::vec3(3.f)}, 
+            {"models/flat_vase.obj", glm::vec3(3.5f, 1.99f, 3.5f), glm::vec3(2.f)}, 
+            {"models/colored_cube.obj", glm::vec3(.0f, -1.0f, .0f), glm::vec3(.1f)},
+            {"models/tar.obj", glm::vec3(.0f, 2.0f, .0f), glm::vec3(.1f)}
+        };
         /*
         std::shared_ptr<OceanModel> smoothVase = OceanModel::createModel(oceanDevice, "models/smooth_vase.obj");
         std::shared_ptr<OceanModel> flatModel = OceanModel::createModel(oceanDevice, "models/flat_vase.obj");
