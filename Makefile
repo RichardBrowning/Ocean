@@ -6,6 +6,7 @@
 # -I.: add current directory to include path
 # -I$(VULKAN_SDK)/include: add Vulkan SDK include path to include path
 # -I$(GLFW_PATH): add GLFW include path to include path
+# -I$(FILAMENT_PATH): add Filament path to include path
 
 # LDFLAGS：gcc compiler optimization parameters, and also library files when necessary
 # -L$(VULKAN_SDK)/lib: add Vulkan SDK lib path to library path
@@ -18,12 +19,12 @@ ifeq ($(OS),Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
-        CXXFLAGS = -Wall -g -std=c++17 -I. -I/usr/include -I/usr/local/include
+        CXXFLAGS = -Wall -g -std=c++17 -I. -I/usr/include -I/usr/local/include -I/opt/filament/include
 		LDFLAGS = -L/usr/lib -L/usr/local/lib `pkg-config --static glfw3` -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr -lXi
 		GLSLC = glslc
     endif
     ifeq ($(UNAME_S),Darwin)
-        CXXFLAGS = -Wall -g -std=c++17 -I. -I$(VULKAN_SDK)/macOS/include -I$(CPATH)
+        CXXFLAGS = -Wall -g -std=c++17 -I. -I$(VULKAN_SDK)/macOS/include -I$(CPATH) -I/Users/liaoluxi/filament/include
 		LDFLAGS = -L$(LIBRARY_PATH) -L$(VULKAN_SDK)/macOS/lib `pkg-config --static glfw3` -lglfw -lvulkan
 		GLSLC = $(VULKAN_SDK)/macOS/bin/glslc
     endif

@@ -29,6 +29,20 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-clang-x64"
+        },
+        {
+            "name": "Darwin",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Users/liaoluxi/filament/include",
+                "/Users/liaoluxi/VulkanSDK/macOS/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-x64",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

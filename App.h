@@ -6,6 +6,10 @@
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>
+//include filament headers
+#include <filament/Engine.h>
+#include <filament/SwapChain.h>
+#include <filament/Renderer.h>
 
 namespace ocean {
     class App {
