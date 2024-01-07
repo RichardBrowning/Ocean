@@ -22,7 +22,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/opt/filament/include",
-                "/home/richardb/VulkanSDK/x86_64/include"
+                /**"/home/richardb/VulkanSDK/x86_64/include"*/
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
