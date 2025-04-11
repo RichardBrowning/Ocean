@@ -2,7 +2,7 @@
 #include "OceanWindow.h"
 #include "OceanDevice.h"
 #include "OceanRenderer.h"
-#include "OceanGameObject.h"
+#include "render/OceanGameObject.h"
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>

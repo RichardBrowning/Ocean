@@ -1,8 +1,8 @@
 #pragma once
-#include "OceanDevice.h"
-#include "OceanPipeline.h"
+#include "core/OceanDevice.h"
+#include "core/OceanPipeline.h"
 #include "OceanGameObject.h"
-#include "PerspectiveCamera.h"
+#include "camera/PerspectiveCamera.h"
 #include <memory>
 #include <vector>
 

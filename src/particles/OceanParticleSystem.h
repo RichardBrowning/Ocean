@@ -1,6 +1,6 @@
 #pragma once
-#include "OceanDevice.h"
-#include "OceanSwapChain.h"
+#include "core/OceanDevice.h"
+#include "core/OceanSwapChain.h"
 #include <glm/glm.hpp>
 
 class OceanParticleSystem{

@@ -1,7 +1,7 @@
 #include "App.h"
-#include "OceanRenderSystem.h"
-#include "KeyboardListener.h"
-#include "PerspectiveCamera.h"
+#include "render/OceanRenderSystem.h"
+#include "input/KeyboardListener.h"
+#include "camera/PerspectiveCamera.h"
 #define GLM_FORRCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>

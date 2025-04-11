@@ -1,7 +1,7 @@
 #pragma once
 
-#include "OceanGameObject.h"
-#include "OceanWindow.h"
+#include "render/OceanGameObject.h"
+#include "core/OceanWindow.h"
 
 namespace ocean{
     class KeyboardListener{

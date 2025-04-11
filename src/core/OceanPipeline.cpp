@@ -1,5 +1,5 @@
 #include "OceanPipeline.h"
-#include "OceanModel.h"
+#include "render/OceanModel.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
