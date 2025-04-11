@@ -1,3 +1,9 @@
-main.dSYM
-main
-main.exe
+build/
+*.spv
+*.o
+*.obj
+*.log
+*.vcxproj*
+.idea/
+.vscode/
+
