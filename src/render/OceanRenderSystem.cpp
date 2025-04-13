@@ -72,7 +72,14 @@ namespace ocean {
             // push.color = gameObject.color;
             // push.transform = projectView * gameObject.transform3d.mat4();
             
-            vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(SimplePushConstantData), &push);
+            vkCmdPushConstants(
+                commandBuffer, 
+                pipelineLayout, 
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
+                0, 
+                sizeof(SimplePushConstantData), 
+                &push
+            );
             gameObject.model->bind(commandBuffer);
             gameObject.model->draw(commandBuffer);
         }

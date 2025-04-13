@@ -41,12 +41,15 @@ namespace ocean {
 
         return gameObject;
     }
+
+    // TODO: multi-thread this process?
     void App::loadGameObjects(){
         std::vector<GameObjectArray> gameObjs = {
-            {"models/smooth_vase.obj", glm::vec3(.0f, .5f, -1.5f), glm::vec3(3.f)}, 
-            {"models/flat_vase.obj", glm::vec3(3.5f, 1.99f, 3.5f), glm::vec3(2.f)}, 
-            {"models/colored_cube.obj", glm::vec3(.0f, -1.0f, .0f), glm::vec3(.1f)},
-            {"models/tar.obj", glm::vec3(.0f, 2.0f, .0f), glm::vec3(.1f)}
+            // left/right, up/down, forward/backward
+            {"models/smooth_vase.obj", glm::vec3(.0f, .5f, 2.0f), glm::vec3(3.f)}, 
+            // {"models/flat_vase.obj", glm::vec3(3.5f, 1.99f, 3.5f), glm::vec3(2.f)}, 
+            {"models/colored_cube.obj", glm::vec3(.0f, -1.f, 2.0f), glm::vec3(.1f)},
+            // {"models/tar.obj", glm::vec3(.0f, 2.0f, .0f), glm::vec3(.1f)}
         };
 
         for (auto& gameObj : gameObjs) {

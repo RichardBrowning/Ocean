@@ -5,6 +5,8 @@
 namespace ocean{
     struct TransformComponent {
         glm::vec3 translation {};
+        // NOTE: if want to only allow uniformshading, vec3 scale -> float scale
+        // float scale {1.f};
         glm::vec3 scale {1.f, 1.f, 1.f};
         glm::vec3 rotation {};
         // glm::mat4 mat4() {
@@ -25,7 +27,7 @@ namespace ocean{
             const float s2 = glm::sin(rotation.x);
             const float c1 = glm::cos(rotation.y);
             const float s1 = glm::sin(rotation.y);
-            const glm::vec3 invScale = 1.0f/scale;
+            const glm::vec3 invScale = 1.0f / scale;
             return glm::mat3{
                 {
                     invScale.x * (c1 * c3 + s1 * s2 * s3),

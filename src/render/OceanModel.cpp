@@ -39,17 +39,17 @@ namespace ocean {
     }
     void OceanModel::createIndexBuffer(const std::vector<uint32_t> &indices){
         indexCount = static_cast<uint32_t>(indices.size());
-        if (indexCount != 0)
-            hasIndexBuffer = true;
+        hasIndexBuffer = indexCount > 0;
         if (!hasIndexBuffer)
             return;
+        // index buffer total size = number of indices * size of each index
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
         oceanDevice.createBuffer(
             bufferSize,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
             stagingBuffer,
             stagingBufferMemory);
@@ -113,11 +113,14 @@ namespace ocean {
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         if (hasIndexBuffer)
+            // parameters: commandBuffer, indexBuffer, offset, indexType
             vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
     }
 
     void OceanModel::draw(VkCommandBuffer commandBuffer){
         if (hasIndexBuffer)
+            // works just like normal draw, but signals vulkan there will be an index buffer available
+            // params: commandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance
             vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
         else
             vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
@@ -151,7 +154,7 @@ namespace ocean {
         inputAttributeDescription.push_back({0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)});
         inputAttributeDescription.push_back({1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)});
         inputAttributeDescription.push_back({2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)});
-        inputAttributeDescription.push_back({3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)});
+        inputAttributeDescription.push_back({3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)}); // UV has 2 components
 
         return inputAttributeDescription;
     }
@@ -177,13 +180,13 @@ namespace ocean {
         indices.clear();
 
         std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
-        for (const auto &shape : shapes)
-        {
-            for (const auto &index : shape.mesh.indices)//loop through all elements of the mesh, return the value of the index
-            {
+        for (const auto &shape : shapes) {
+            //loop through all elements of the mesh, return the value of the index
+            for (const auto &index : shape.mesh.indices) {
                 //init a vertex
                 Vertex vertex{};
-                if (index.vertex_index >= 0){//vertex_index is the first value of the face element: what position value to use, if -1, not provided
+                if (index.vertex_index >= 0) {
+                    //vertex_index is the first value of the face element: what position value to use, if -1, not provided
                     vertex.position = {
                         attrib.vertices[3 * index.vertex_index], 
                         attrib.vertices[3 * index.vertex_index + 1], 
@@ -195,14 +198,15 @@ namespace ocean {
                         attrib.colors[3 * index.vertex_index + 1],
                         attrib.colors[3 * index.vertex_index + 2]
                     };
-                    // auto colorIndex = 3 * index.vertex_index + 2;
-                    // if (colorIndex < attrib.colors.size()){
-                    //     vertex.color = {
-                    //         attrib.colors[colorIndex - 2],
-                    //         attrib.colors[colorIndex - 1],
-                    //         attrib.colors[colorIndex]};
-                    // }else
-                    //     vertex.color = {1.0f, 1.0f, 1.0f};
+                    size_t colorIndex = 3 * index.vertex_index + 2;
+                    // check if the color has been provided: check if the last index is less than the size of the color vector
+                    if (colorIndex < attrib.colors.size()){
+                        vertex.color = {
+                            attrib.colors[colorIndex - 2],
+                            attrib.colors[colorIndex - 1],
+                            attrib.colors[colorIndex]};
+                    }else
+                        vertex.color = {1.0f, 1.0f, 1.0f};
                 }
 
                 if (index.normal_index >= 0)
