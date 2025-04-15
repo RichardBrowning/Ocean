@@ -57,10 +57,10 @@ namespace ocean {
         oceanPipeline = std::make_unique<OceanPipeline>(oceanDevice, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv", pipelineConfig);
     }
 
-    void OceanRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<OceanGameObject> &gameObjects, const PerspectiveCamera &camera)
+    void OceanRenderSystem::renderGameObjects(OceanFrameInfo &frameInfo, std::vector<OceanGameObject> &gameObjects)
     {
-        oceanPipeline->bind(commandBuffer);
-        auto projectView = camera.getProjection() * camera.getView();
+        oceanPipeline->bind(frameInfo.commandBuffer);
+        auto projectView = frameInfo.camera.getProjection() * frameInfo.camera.getView();
         for (auto& gameObject : gameObjects)
         {
             // gameObject.transform3d.rotation.y = glm::mod(gameObject.transform3d.rotation.y + 0.01f, glm::two_pi<float>());
@@ -73,15 +73,15 @@ namespace ocean {
             // push.transform = projectView * gameObject.transform3d.mat4();
             
             vkCmdPushConstants(
-                commandBuffer, 
+                frameInfo.commandBuffer, 
                 pipelineLayout, 
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 
                 0, 
                 sizeof(SimplePushConstantData), 
                 &push
             );
-            gameObject.model->bind(commandBuffer);
-            gameObject.model->draw(commandBuffer);
+            gameObject.model->bind(frameInfo.commandBuffer);
+            gameObject.model->draw(frameInfo.commandBuffer);
         }
     }
 }

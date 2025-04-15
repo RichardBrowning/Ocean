@@ -30,12 +30,7 @@ namespace ocean {
 
     OceanModel::~OceanModel()
     {
-        vkDestroyBuffer(oceanDevice.device(), vertexBuffer, nullptr);
-        vkFreeMemory(oceanDevice.device(), vertexBufferMemory, nullptr);
-        if (hasIndexBuffer){
-            vkDestroyBuffer(oceanDevice.device(), indexBuffer, nullptr);
-            vkFreeMemory(oceanDevice.device(), indexBufferMemory, nullptr);
-        }
+        // cleaning is handled by uniform buffer auto
     }
     void OceanModel::createIndexBuffer(const std::vector<uint32_t> &indices){
         indexCount = static_cast<uint32_t>(indices.size());
@@ -44,77 +39,75 @@ namespace ocean {
             return;
         // index buffer total size = number of indices * size of each index
         VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
+        uint32_t indexSize = sizeof(indices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        oceanDevice.createBuffer(
-            bufferSize,
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingBufferMemory);
+        // use staging buffer temperarily to copy data from host to GPU (previously VkBuffer, now unified buffer)
+        OceanBuffer stagingBuffer(
+            oceanDevice, 
+            indexSize, 
+            indexCount,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        );
+        // mapping memeory
+        stagingBuffer.map();
+        // copying data to the buffer
+        stagingBuffer.writeToBuffer((void *)indices.data());
 
-        void *data;
-        vkMapMemory(oceanDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, indices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(oceanDevice.device(), stagingBufferMemory);
-
-        oceanDevice.createBuffer(
-            bufferSize,
+        indexBuffer = std::make_unique<OceanBuffer>(
+            oceanDevice, 
+            indexSize, 
+            indexCount,
             VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            indexBuffer,
-            indexBufferMemory);
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+        );
 
         //copy staging buffer to index buffer
-        oceanDevice.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+        oceanDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
 
-        //cleanup staging buffer
-        vkDestroyBuffer(oceanDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(oceanDevice.device(), stagingBufferMemory, nullptr);
+        //cleanup staging buffer is no longer needed
     }
 
     void OceanModel::createVertexBuffer(const std::vector<Vertex> &vertices){
         vertexCount = static_cast<uint32_t>(vertices.size());
         assert(vertexCount >= 3 && "Vertex count must be at least 3");
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
+        uint32_t vertexSize = sizeof(vertices[0]);
 
-        VkBuffer stagingBuffer;
-        VkDeviceMemory stagingBufferMemory;
-        oceanDevice.createBuffer(
-            bufferSize,
+        // use staging buffer temperarily to copy data from host to GPU (previously VkBuffer, now unified buffer)
+        OceanBuffer stagingBuffer(
+            oceanDevice, 
+            vertexSize, 
+            vertexCount,
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-            stagingBuffer,
-            stagingBufferMemory);
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        );
+        // mapping memeory
+        stagingBuffer.map();
+        // copying data to the buffer
+        stagingBuffer.writeToBuffer((void *)vertices.data());
 
-        void *data;
-        vkMapMemory(oceanDevice.device(), stagingBufferMemory, 0, bufferSize, 0, &data);
-        memcpy(data, vertices.data(), static_cast<size_t>(bufferSize));
-        vkUnmapMemory(oceanDevice.device(), stagingBufferMemory);
-
-        oceanDevice.createBuffer(
-            bufferSize,
+        vertexBuffer = std::make_unique<OceanBuffer>(
+            oceanDevice, 
+            vertexSize, 
+            vertexCount,
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            vertexBuffer,
-            vertexBufferMemory);
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+        );
 
         //copy staging buffer to vertex buffer
-        oceanDevice.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+        oceanDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
 
-        //cleanup staging buffer
-        vkDestroyBuffer(oceanDevice.device(), stagingBuffer, nullptr);
-        vkFreeMemory(oceanDevice.device(), stagingBufferMemory, nullptr);
+        //cleanup staging buffer is no longer needed
     }
 
     void OceanModel::bind(VkCommandBuffer commandBuffer){
-        VkBuffer vertexBuffers[] = {vertexBuffer};
+        VkBuffer vertexBuffers[] = {vertexBuffer->getBuffer()};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         if (hasIndexBuffer)
             // parameters: commandBuffer, indexBuffer, offset, indexType
-            vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+            vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
     }
 
     void OceanModel::draw(VkCommandBuffer commandBuffer){

@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 namespace ocean{
-    class OceanPerspectiveCamera{
+    class OceanCamera{
         public:
             void setOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
 

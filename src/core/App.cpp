@@ -1,9 +1,4 @@
 #include "App.h"
-#include "render/OceanRenderSystem.h"
-#include "input/KeyboardListener.h"
-#include "camera/PerspectiveCamera.h"
-#define GLM_FORRCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <stdexcept>
@@ -11,7 +6,22 @@
 #include <array>
 #include <chrono>
 
+#define GLM_FORRCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include "render/OceanRenderSystem.h"
+#include "input/KeyboardListener.h"
+#include "camera/PerspectiveCamera.h"
+#include "core/OceanBuffer.h"
+#include "core/OceanFrameInfo.h"
+
 namespace ocean {
+
+    // struct for passing read-only data to pipeline shaders
+    struct GlobalUBO{
+        glm::mat4 projectionMatrix{1.f};
+        glm::vec3 lightPosition = glm::normalize(glm::vec3(1.f, -3.f, -1.f));
+    }; 
+
     App::App()
     {
         // std::cout << "first cpp starts" << std::endl;
@@ -64,6 +74,17 @@ namespace ocean {
     }
 
     void App::run() {
+        OceanBuffer globalUboBuffer(
+            oceanDevice,
+            sizeof(GlobalUBO),
+            OceanSwapChain::MAX_FRAMES_IN_FLIGHT,
+            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+            oceanDevice.properties.limits.minUniformBufferOffsetAlignment
+        );
+        // enable writing to its memeory
+        globalUboBuffer.map();
+
         // std::cout << "run starts" << std::endl;
         OceanRenderSystem renderSystem{ oceanDevice, oceanRenderer.getSwapChainRenderPass() } ;
         PerspectiveCamera camera{};
@@ -90,13 +111,28 @@ namespace ocean {
             camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 100.f);//always update with window size, left & right = aspect
             //the begin fram function will return a null function if the swap chain need to be recreated
             if(auto commandBuffer = oceanRenderer.beginFrame()) {
+                int frameIndex = oceanRenderer.getFrameIndex();
+
+                OceanFrameInfo frameInfo{
+                    frameIndex,
+                    delta,
+                    commandBuffer,
+                    camera
+                };
+
+                // update buffer data
+                GlobalUBO ubo{};
+                ubo.projectionMatrix = camera.getProjection() * camera.getView();
+                globalUboBuffer.writeToBuffer(&ubo, frameIndex);
+                globalUboBuffer.flushIndex(frameIndex);
+
                 //begin offscreen shadow pass
                 //render shadow castign objects
                 //end offscreen shadow pass
                 // std::cout << "0" <<std::endl;
                 oceanRenderer.beginSwapChainRenderPass(commandBuffer);
                 // std::cout << "1" << std::endl;
-                renderSystem.renderGameObjects(commandBuffer, gameObjects, camera);
+                renderSystem.renderGameObjects(frameInfo, gameObjects);
                 // std::cout << "2" << std::endl;
                 oceanRenderer.endSwapChainRenderPass(commandBuffer);
                 // std::cout << "3" << std::endl;

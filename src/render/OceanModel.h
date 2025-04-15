@@ -1,11 +1,13 @@
 #pragma once
-#include "core/OceanDevice.h"
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <memory>
+
+#include "core/OceanDevice.h"
+#include "core/OceanBuffer.h"
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 namespace ocean
 {
@@ -46,11 +48,13 @@ namespace ocean
         void createVertexBuffer(const std::vector<Vertex> &vertices);
         void createIndexBuffer(const std::vector<uint32_t> &indices);
         OceanDevice &oceanDevice; //reference to the device
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        // uniform buffer object
+        std::unique_ptr<OceanBuffer> vertexBuffer;
+        // VkDeviceMemory vertexBufferMemory;
         uint32_t vertexCount;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+        
+        std::unique_ptr<OceanBuffer> indexBuffer;
+        //VkDeviceMemory indexBufferMemory;
         uint32_t indexCount;
         bool hasIndexBuffer{false};
     };

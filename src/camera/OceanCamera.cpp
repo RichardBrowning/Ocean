@@ -1,7 +1,7 @@
-#include "OceanPerspectiveCamera.h"
+#include "OceanCamera.h"
 
 namespace ocean{
-    void OceanPerspectiveCamera::setOrthographicProjection(float left, float right, float top, float bottom, float near, float far) {
+    void OceanCamera::setOrthographicProjection(float left, float right, float top, float bottom, float near, float far) {
         projectionMatrix = glm::mat4{1.0f};
         projectionMatrix[0][0] = 2.f / (right - left);
         projectionMatrix[1][1] = 2.f / (bottom - top);
@@ -11,7 +11,7 @@ namespace ocean{
         projectionMatrix[3][2] = - near / (far - near);
     }
 
-    void OceanPerspectiveCamera::setPerspectiveProjection(float fovY, float aspect, float near, float far) {
+    void OceanCamera::setPerspectiveProjection(float fovY, float aspect, float near, float far) {
         //Returns the machine epsilon, that is, the difference between 1.0 and the next value representable by the floating-point type T. It is only meaningful if std::numeric_limits<T>::is_integer == false
         //Here as long as aspect is not lim(->0), the assert is true
         assert(glm::abs(aspect - std::numeric_limits<float>::epsilon()) > 0.0f);
@@ -26,7 +26,7 @@ namespace ocean{
 
     }
 
-    void OceanPerspectiveCamera::setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
+    void OceanCamera::setViewDirection(glm::vec3 position, glm::vec3 direction, glm::vec3 up) {
         //orthonormal basis
         const glm::vec3 w{glm::normalize(direction)};
         const glm::vec3 u{glm::normalize(glm::cross(w, up))};
@@ -46,10 +46,10 @@ namespace ocean{
         viewMatrix[3][1] = -glm::dot(v, position);
         viewMatrix[3][2] = -glm::dot(w, position);
     }
-    void OceanPerspectiveCamera::setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
+    void OceanCamera::setViewTarget(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
         setViewDirection(position, target - position, up);
     }
-    void OceanPerspectiveCamera::setViewYXZ(glm::vec3 position, glm::vec3 rotation) {
+    void OceanCamera::setViewYXZ(glm::vec3 position, glm::vec3 rotation) {
         const float c3 = glm::cos(rotation.z);
         const float s3 = glm::sin(rotation.z);
         const float c2 = glm::cos(rotation.x);
